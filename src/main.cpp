@@ -26,6 +26,12 @@ int roomNumber = 1120;
 // put function declarations here:
 int myFunction(int, int);
 
+// Movement functions
+void moveForward(int speed, int duration);
+void moveBackward(int speed, int duration);
+void turnLeft(int speed, int duration);
+void turnRight(int speed, int duration);
+
 void setup() {
   // put your setup code here, to run once:
   int result = myFunction(2, 3);
@@ -40,4 +46,22 @@ void loop() {
 // put function definitions here:
 int myFunction(int x, int y) {
   return x + y;
+}
+
+void moveForward(int speed, int duration) {
+  // Code to move the robot forward at the specified speed and duration
+
+
+}
+
+void moveBackward(int speed, int duration) {
+  // Code to move the robot backward at the specified speed and duration
+}
+
+void turnLeft(int speed, int duration) {
+  // Code to turn the robot left at the specified speed and duration
+}
+
+void turnRight(int speed, int duration) {
+  // Code to turn the robot right at the specified speed and duration
 }

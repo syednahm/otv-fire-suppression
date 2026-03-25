@@ -25,21 +25,26 @@ int roomNumber = 1120;
 
 
 // put function declarations here:
-int myFunction(int, int);
 
 // Movement functions
+// speed should be in the range of 0-255, where 0 is stopped and 255 is full speed.
 void moveForward(int speed, int duration);
+void moveForward(int distance);
 void moveBackward(int speed, int duration);
-void turnLeft(int speed, int duration);
-void turnRight(int speed, int duration);
+void turnLeft(int angle);
+void turnRight(int angle);
+int angleDifference(int from, int to);
 
 void setup() {
     Enes100.begin("Phoenix ", FIRE, markerId, 1120, 11, 12);
     // At this point we know we are connected.
     Enes100.println("Connected...");
   // put your setup code here, to run once:
-  int result = myFunction(2, 3);
   Serial.begin(9600);
+  pinMode(left_motor_forward, OUTPUT);
+  pinMode(left_motor_backward, OUTPUT);
+  pinMode(right_motor_forward, OUTPUT);
+  pinMode(right_motor_backward, OUTPUT);
 }
 
 void loop() {
@@ -74,25 +79,102 @@ void loop() {
     delay(1000);
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void moveForward(int speed, int duration) {  
+  analogWrite(left_motor_forward, speed);
+  analogWrite(right_motor_forward, speed);
+  delay(duration);
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_forward, 0);
 }
 
-void moveForward(int speed, int duration) {
-  // Code to move the robot forward at the specified speed and duration
-
-
+// Move forward using distance instead of time and speed.
+void moveForward(int distance) {
+  const int MOTOR_SPEED = 150;
+  
+  float startX = Enes100.getX();
+  float startY = Enes100.getY();
+  float angle = Enes100.getTheta();
+  
+  // Calculate target position using trig
+  float targetX = startX + distance * cos(angle);
+  float targetY = startY + distance * sin(angle);
+  
+  // Turn on both motors
+  analogWrite(left_motor_forward, MOTOR_SPEED);
+  analogWrite(right_motor_forward, MOTOR_SPEED);
+  
+  // Keep moving until we reach the target position
+  while (true) {
+    float currentX = Enes100.getX();
+    float currentY = Enes100.getY();
+    
+    // Calculate distance to target
+    float distanceToTarget = sqrt(pow(targetX - currentX, 2) + pow(targetY - currentY, 2));
+    
+    // Stop when close enough (within 5cm tolerance)
+    if (distanceToTarget < 0.05) {  // 0.05 meters = 5 cm
+      break;
+    }
+    
+    delay(50);  // Small delay between position checks
+  }
+  
+  // Stop both motors
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_forward, 0);
 }
 
 void moveBackward(int speed, int duration) {
-  // Code to move the robot backward at the specified speed and duration
+  analogWrite(left_motor_backward, speed);
+  analogWrite(right_motor_backward, speed);
+  delay(duration);
+  analogWrite(left_motor_backward, 0);
+  analogWrite(right_motor_backward, 0);
 }
 
-void turnLeft(int speed, int duration) {
-  // Code to turn the robot left at the specified speed and duration
+void turnLeft(int angle) {
+  int startAngle = getAngle();
+  int targetRotation = angle;  // how much to rotate
+  int rotated = 0;
+  
+  // Drive left turn motors
+  analogWrite(left_motor_backward, 150);
+  analogWrite(right_motor_forward, 150);
+  
+  // Loop until rotated enough
+  while (rotated < targetRotation) {
+    int currentAngle = getAngle();
+    rotated = angleDifference(startAngle, currentAngle);
+    delay(10);
+  }
+  
+  // Stop motors
+  analogWrite(left_motor_backward, 0);
+  analogWrite(right_motor_forward, 0);
 }
 
-void turnRight(int speed, int duration) {
-  // Code to turn the robot right at the specified speed and duration
+void turnRight(int angle) {
+  int startAngle = getAngle();
+  int targetRotation = angle;
+  int rotated = 0;
+  
+  analogWrite(left_motor_forward, 150);
+  analogWrite(right_motor_backward, 150);
+  
+  while (rotated < targetRotation) {
+    int currentAngle = getAngle();
+    rotated = angleDifference(startAngle, currentAngle);
+    delay(10);
+  }
+  
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_backward, 0);
+}
+
+// Helper to compute the difference between two angles (always positive)
+int angleDifference(int from, int to) {
+  int diff = to - from;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return abs(diff);
 }

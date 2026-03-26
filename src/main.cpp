@@ -36,11 +36,14 @@ void turnRight(int angle);
 int angleDifference(int from, int to);
 
 void setup() {
-    Enes100.begin("Phoenix ", FIRE, markerId, 1120, 11, 12);
-    // At this point we know we are connected.
-    Enes100.println("Connected...");
-  // put your setup code here, to run once:
   Serial.begin(9600);
+  Enes100.begin(teamName, teamType, markerId, roomNumber, wifiModuleTX, wifiModuleRX);
+  // At this point we know we are connected.
+  if (Enes100.isConnected()) {
+    Serial.println("Connected to vision system!");
+  } else {
+    Serial.println("Failed to connect to vision system.");
+  }  
   pinMode(left_motor_forward, OUTPUT);
   pinMode(left_motor_backward, OUTPUT);
   pinMode(right_motor_forward, OUTPUT);

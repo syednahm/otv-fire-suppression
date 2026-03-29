@@ -32,13 +32,24 @@ void moveBackward(int speed, int duration);
 void turnLeft(int speed, int duration);
 void turnRight(int speed, int duration);
 
+//IR function 
+void irSensorReadings();
+
 void setup() {
   // put your setup code here, to run once:
   int result = myFunction(2, 3);
   Serial.begin(9600);
+
+  pinMode(ir_sensor_left, INPUT);
+  pinMode(ir_sensor_right, INPUT);
+  pinMode(fans, OUTPUT);
+
+  digitalWrite(fans, LOW); // Ensure fans are off at the start
 }
 
 void loop() {
+  irSensorReadings();
+  delay(100);
   // put your main code here, to run repeatedly:
   Serial.println("Hello, World!");
 }
@@ -64,4 +75,38 @@ void turnLeft(int speed, int duration) {
 
 void turnRight(int speed, int duration) {
   // Code to turn the robot right at the specified speed and duration
+}
+
+void irSensorReadings(){
+  int threshold = 500; // threshold value for flame detection, need to test and adjust accordingly
+
+  // Code to detect if flames are present
+  int leftFlame = analogRead(ir_sensor_left);
+  int rightFlame = analogRead(ir_sensor_right);
+
+  Serial.print("Left IR Sensor: ");
+  Serial.print(leftFlame);
+  Serial.print(" | Right IR Sensor: ");
+  Serial.println(rightFlame);
+  
+  if (leftFlame > threshold && rightFlame >threshold){
+    digitalWrite(fans,HIGH);
+    Serial.println("Flame detected on both sides!");
+  }
+  else if (leftFlame > threshold){
+    digitalWrite(fans, HIGH);
+    Serial.println("Flame detected on the left side!");
+  }
+  
+  else if (rightFlame > threshold){
+    digitalWrite(fans, HIGH);
+    Serial.println("Flame detected on the right side!");
+  }
+
+  else{
+    digitalWrite(fans,LOW);
+    Serial.println("No flames detected.");
+}
+  
+  
 }

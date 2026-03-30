@@ -193,13 +193,11 @@ int angleDifference(int from, int to) {
   return abs(diff);
 }
 
-// Get a 0..359 degree heading from Enes100 theta (-PI..PI)
+// Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
 int getAngle() {
   float theta = Enes100.getTheta();
-  if (theta == -1) return 0; // If not visible / not available, return 0 as fallback
-  int deg = (int)(theta * 180.0 / PI);
-  if (deg < 0) deg += 360;
-  return deg;
+  if (theta == -1) return 0; // If aruco marker is not visible, return 0 as fallback
+  return (int)(theta * 180.0 / PI);
 }
 
 void irSensorReadings(){

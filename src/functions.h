@@ -22,6 +22,7 @@ const char* teamName = "Phoenix";
 // replace with Aruco Marker ID.
 int markerId;
 int roomNumber = 1120;
+int globalFireCount = 1;
 
 // put function declarations here:
 // Movement functions

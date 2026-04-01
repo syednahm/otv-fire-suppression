@@ -1,8 +1,14 @@
 #include "functions.h"
 
+
+
 void setup() {
   // Start serial first for debug output
   Serial.begin(9600);
+
+  // WiFi module pins
+  pinMode(wifiModuleTX, OUTPUT);
+  pinMode(wifiModuleRX, INPUT);
 
   // Initialize Enes100 (vision / localization)
   Enes100.begin(teamName, teamType, markerId, roomNumber, wifiModuleTX, wifiModuleRX);
@@ -26,41 +32,58 @@ void setup() {
   pinMode(fans, OUTPUT);
   digitalWrite(fans, LOW); // Ensure fans are off at the start
 
-  // WiFi module pins
-  pinMode(wifiModuleTX, OUTPUT);
-  pinMode(wifiModuleRX, INPUT);
-
   // Distance sensor pins
   pinMode(dist_sensor_trigs, OUTPUT);
   pinMode(dist_sensor_left_echo, INPUT);
   pinMode(dist_sensor_right_echo, INPUT);
-
 }
+
 
 void loop() {
 
-  // Read localization / vision info and print
-  float x, y, t; bool v;
-  x = Enes100.getX();
-  y = Enes100.getY();
-  t = Enes100.getTheta();
-  v = Enes100.isVisible();
-
-  if (v) {
-    Enes100.print(x);
-    Enes100.print(",");
-    Enes100.print(y);
-    Enes100.print(",");
-    Enes100.println(t);
-  } else {
-    Enes100.println("Not visible");
+  if (topographyReached == 0) {
+    Enes100.updateLocation();
+    // Top starting point
+    if (Enes100.location.y > 1.0) {
+      turnToAngle(-90);
+      float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+      const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
+      if (distanceToTop > SAFE_STOP_DISTANCE) {
+        distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+        moveForward(distanceToTop - SAFE_STOP_DISTANCE);
+      }
+    }
   }
 
-  // Transmit mission data (example values)
-  Enes100.mission(NUM_CANDLES, 4);
-  Enes100.mission(TOPOGRAPHY, TOP_A);
 
-  delay(1000);
+
+
+
+
+
+
+  // Read localization / vision info and print
+  // float x, y, t; bool v;
+  // x = Enes100.getX();
+  // y = Enes100.getY();
+  // t = Enes100.getTheta();
+  // v = Enes100.isVisible();
+
+  // if (v) {
+  //   Enes100.print(x);
+  //   Enes100.print(",");
+  //   Enes100.print(y);
+  //   Enes100.print(",");
+  //   Enes100.println(t);
+  // } else {
+  //   Enes100.println("Not visible");
+  // }
+
+  // // Transmit mission data (example values)
+  // Enes100.mission(NUM_CANDLES, 4);
+  // Enes100.mission(TOPOGRAPHY, TOP_A);
+
+  // delay(1000);
 }
 
 
@@ -81,7 +104,7 @@ void moveForward(int speed, int duration) {
 }
 
 // Move forward using distance (meters) instead of time and speed.
-void moveForward(int distance) {
+void moveForward(float distance) {
   const int MOTOR_SPEED = 150;
 
   float startX = Enes100.getX();
@@ -205,4 +228,19 @@ void irSensorReadings(){
     digitalWrite(fans, LOW);
     Serial.println("No flames detected.");
   }
+}
+
+
+float calculateDistance(int trigPin, int echoPin) {
+  int duration;
+  float distance;
+  digitalWrite(trigPin, HIGH);
+  delay(10);
+  digitalWrite(trigPin, LOW);
+  
+  duration = pulseIn(echoPin, HIGH);
+  
+  distance = duration * 0.0343 / 2.0; // Convert duration to distance in cm
+  
+  return distance;
 }

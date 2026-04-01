@@ -17,18 +17,23 @@ const int fans = 10;
 const int wifiModuleTX = 11;
 const int wifiModuleRX = 12;
 
+
+// Global Variables
+float topographyReached = 0;
+int globalFireCount = 1;
+
+// Team info for Enes100
 byte teamType = FIRE;
 const char* teamName = "Phoenix";
 // replace with Aruco Marker ID.
 int markerId;
 int roomNumber = 1120;
-int globalFireCount = 1;
 
 // put function declarations here:
 // Movement functions
 // speed should be in the range of 0-255, where 0 is stopped and 255 is full speed.
 void moveForward(int speed, int duration);
-void moveForward(int distance);
+void moveForward(float distance);
 void moveBackward(int speed, int duration);
 void turnLeft(int angle);
 void turnRight(int angle);

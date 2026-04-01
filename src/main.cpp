@@ -1,7 +1,6 @@
 #include "functions.h"
 
 
-
 void setup() {
   // Start serial first for debug output
   Serial.begin(9600);
@@ -196,9 +195,9 @@ void moveBackward(int speed, int duration) {
 }
 
 void turnLeft(int angle) {
-  int startAngle = getAngle();
-  int targetRotation = angle;  // how much to rotate (degrees)
-  int rotated = 0;
+  float startAngle = getAngle();
+  float targetRotation = angle;  // how much to rotate (degrees)
+  float rotated = 0;
 
   // Drive left turn motors
   analogWrite(left_motor_backward, 150);
@@ -206,7 +205,7 @@ void turnLeft(int angle) {
 
   // Loop until rotated enough
   while (rotated < targetRotation) {
-    int currentAngle = getAngle();
+    float currentAngle = getAngle();
     rotated = angleDifference(startAngle, currentAngle);
     delay(10);
   }
@@ -216,16 +215,16 @@ void turnLeft(int angle) {
   analogWrite(right_motor_forward, 0);
 }
 
-void turnRight(int angle) {
-  int startAngle = getAngle();
-  int targetRotation = angle;
-  int rotated = 0;
+void turnRight(float angle) {
+  float startAngle = getAngle();
+  float targetRotation = angle;
+  float rotated = 0;
 
   analogWrite(left_motor_forward, 150);
   analogWrite(right_motor_backward, 150);
 
   while (rotated < targetRotation) {
-    int currentAngle = getAngle();
+    float currentAngle = getAngle();
     rotated = angleDifference(startAngle, currentAngle);
     delay(10);
   }
@@ -235,18 +234,18 @@ void turnRight(int angle) {
 }
 
 // Helper to compute the difference between two angles (degrees, always positive)
-int angleDifference(int from, int to) {
-  int diff = to - from;
+float angleDifference(float from, float to) {
+  float diff = to - from;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
   return abs(diff);
 }
 
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
-int getAngle() {
+float getAngle() {
   float theta = Enes100.getTheta();
   if (theta == -1) return 0; // If aruco marker is not visible, return 0 as fallback
-  return (int)(theta * 180.0 / PI);
+  return theta * 180.0 / PI;
 }
 
 void irSensorReadings(){

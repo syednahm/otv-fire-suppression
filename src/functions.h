@@ -42,7 +42,7 @@ void turnRight(int angle);
 void turnToAngle(int angle);
 int angleDifference(int from, int to);
 int normalizedAngleDiff(int from, int to);
-int getAngle();
+float getAngle();
 
 // IR function
 void irSensorReadings();

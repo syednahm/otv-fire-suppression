@@ -72,7 +72,7 @@ void loop() {
 
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    while (abs(leftDistance - rightDistance) > 0.02) {
+    while (abs(leftDistance - rightDistance) > 0.01) { // 1 cm threshold for correction
       correctAngle(leftDistance, rightDistance);
       leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
@@ -256,10 +256,10 @@ void irSensorReadings(){
   int leftFlame = analogRead(ir_sensor_left);
   int rightFlame = analogRead(ir_sensor_right);
 
-  Serial.print("Left IR Sensor: ");
+  Serial.println("Left IR Sensor: ");
   Serial.print(leftFlame);
-  Serial.print("Right IR Sensor: ");
-  Serial.println(rightFlame);
+  Serial.println("Right IR Sensor: ");
+  Serial.print(rightFlame);
   
   if (leftFlame > threshold && rightFlame > threshold){
     digitalWrite(fans, HIGH);
@@ -293,16 +293,12 @@ float calculateDistance(int trigPin, int echoPin) {
 }
 
 void correctAngle(float leftDistance, float rightDistance) {
-  const float DISTANCE_THRESHOLD = 0.01; // 1 cm threshold for correction
-
-  if (abs(leftDistance - rightDistance) > DISTANCE_THRESHOLD) {
-    if (leftDistance < rightDistance) {
-      // Too close to the topography, turn slightly left
-      turnLeft(1);
-    } else {
-      // Too close to the topography, turn slightly right
-      turnRight(1);
-    }
+  if (leftDistance < rightDistance) {
+    // Too close to the topography, turn slightly left
+    turnLeft(1);
+  } else {
+    // Too close to the topography, turn slightly right
+    turnRight(1);
   }
 }
 

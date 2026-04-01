@@ -36,12 +36,17 @@ void setup() {
   pinMode(dist_sensor_trigs, OUTPUT);
   pinMode(dist_sensor_left_echo, INPUT);
   pinMode(dist_sensor_right_echo, INPUT);
+
+  // Switch pins for topography detection
+  pinMode(mid_switch, INPUT_PULLUP);
+  pinMode(right_switch, INPUT_PULLUP);
 }
 
 
 void loop() {
 
   if (topographyReached == 0) {
+    globalFireCount = 1;
     Enes100.updateLocation();
     // Top starting point
     if (Enes100.location.y > 1.0) {
@@ -52,6 +57,7 @@ void loop() {
         distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
         moveForward(distanceToTop - SAFE_STOP_DISTANCE);
       }
+      turnToAngle(-90);
     } else {
       // Bottom starting point
       turnToAngle(90);
@@ -61,8 +67,39 @@ void loop() {
         distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
         moveForward(distanceToBottom - SAFE_STOP_DISTANCE);
       }
+      turnToAngle(90);
     }
+
+    float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+    float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+    while (abs(leftDistance - rightDistance) > 0.02) {
+      correctAngle(leftDistance, rightDistance);
+      leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+      rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+    }
+
+    irSensorReadings();
+    moveForward(0.15);
+    irSensorReadings();
+    topography = checkTopgraphy();
+    
+    if (topography != -1) {
+      Enes100.mission(TOPOGRAPHY, topography);
+      topographyReached = 1;
+      Enes100.mission(NUM_CANDLES, globalFireCount);
+    } else {
+      Serial.println("Error: Could not determine topography.");
+      moveBackward(150, 1000);
+    }
+    
   }
+
+  // First checks to see if old task is completed and also if new task is uncompleted.
+  if (topographyReached == 1 && safeZoneReached == 0) {
+    ;
+  }
+
+
 
 
 
@@ -113,6 +150,7 @@ void moveForward(int speed, int duration) {
 }
 
 // Move forward using distance (meters) instead of time and speed.
+// MAY need to change this to rely on timing and speed.
 void moveForward(float distance) {
   const int MOTOR_SPEED = 150;
 
@@ -136,8 +174,8 @@ void moveForward(float distance) {
     // Calculate distance to target
     float distanceToTarget = sqrt(pow(targetX - currentX, 2) + pow(targetY - currentY, 2));
 
-    // Stop when close enough (within 5cm tolerance)
-    if (distanceToTarget < 0.05) {  // 0.05 meters = 5 cm
+    // Stop when close enough (within 3cm tolerance)
+    if (distanceToTarget < 0.03) {  // 0.03 meters = 3 cm
       break;
     }
 
@@ -252,4 +290,37 @@ float calculateDistance(int trigPin, int echoPin) {
   distance = duration * 0.0343 / 2.0; // Convert duration to distance in cm
   
   return distance;
+}
+
+void correctAngle(float leftDistance, float rightDistance) {
+  const float DISTANCE_THRESHOLD = 0.01; // 1 cm threshold for correction
+
+  if (abs(leftDistance - rightDistance) > DISTANCE_THRESHOLD) {
+    if (leftDistance < rightDistance) {
+      // Too close to the topography, turn slightly left
+      turnLeft(1);
+    } else {
+      // Too close to the topography, turn slightly right
+      turnRight(1);
+    }
+  }
+}
+
+int checkTopography() {
+  bool midPressed = digitalRead(mid_switch) == LOW; // Assuming active LOW
+  bool rightPressed = digitalRead(right_switch) == LOW;
+
+  if (midPressed && rightPressed) {
+    Serial.println("Topography: Both switches pressed");
+    return TOP_C; // Both
+  } else if (midPressed) {
+    Serial.println("Topography: Mid switch pressed");
+    return TOP_A; // Mid
+  } else if (rightPressed) {
+    Serial.println("Topography: Right switch pressed");
+    return TOP_B; // Right
+  } else {
+    Serial.println("Topography: No switches pressed");
+    return -1; // None
+  }
 }

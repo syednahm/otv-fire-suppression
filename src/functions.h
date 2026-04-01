@@ -2,7 +2,7 @@
 #include <Enes100.h>
 
 // put pin definitions here:
-const int left_switch = 2;
+const int mid_switch = 2;
 const int right_switch = 4;
 const int left_motor_forward = 3;
 const int left_motor_backward = 5;
@@ -19,7 +19,9 @@ const int wifiModuleRX = 12;
 
 
 // Global Variables
-float topographyReached = 0;
+short topographyReached = 0;
+short safeZoneReached = 0;
+int topography;
 int globalFireCount = 1;
 
 // Team info for Enes100
@@ -44,3 +46,5 @@ int getAngle();
 
 // IR function
 void irSensorReadings();
+
+int checkTopgraphy();

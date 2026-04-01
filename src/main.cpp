@@ -17,6 +17,8 @@ const int fans = 10;
 const int wifiModuleTX = 11;
 const int wifiModuleRX = 12;
 
+
+int globalFireCount = 0;
 byte teamType = FIRE;
 const char* teamName = "Phoenix";
 // replace with Aruco Marker ID.
@@ -231,7 +233,7 @@ void irSensorReadings(){
 
   Serial.print("Left IR Sensor: ");
   Serial.print(leftFlame);
-  Serial.print(" | Right IR Sensor: ");
+  Serial.print("Right IR Sensor: ");
   Serial.println(rightFlame);
   
   if (leftFlame > threshold && rightFlame > threshold){

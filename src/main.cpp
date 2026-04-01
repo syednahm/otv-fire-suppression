@@ -6,6 +6,7 @@ void setup() {
 
   // Initialize Enes100 (vision / localization)
   Enes100.begin(teamName, teamType, markerId, roomNumber, wifiModuleTX, wifiModuleRX);
+
   // At this point we know we are connected.
   if (Enes100.isConnected()) {
     Serial.println("Connected to vision system!");
@@ -24,12 +25,19 @@ void setup() {
   pinMode(ir_sensor_right, INPUT);
   pinMode(fans, OUTPUT);
   digitalWrite(fans, LOW); // Ensure fans are off at the start
+
+  // WiFi module pins
+  pinMode(wifiModuleTX, OUTPUT);
+  pinMode(wifiModuleRX, INPUT);
+
+  // Distance sensor pins
+  pinMode(dist_sensor_trigs, OUTPUT);
+  pinMode(dist_sensor_left_echo, INPUT);
+  pinMode(dist_sensor_right_echo, INPUT);
+
 }
 
 void loop() {
-  // Read IR sensors frequently
-  irSensorReadings();
-  delay(100);
 
   // Read localization / vision info and print
   float x, y, t; bool v;
@@ -54,6 +62,15 @@ void loop() {
 
   delay(1000);
 }
+
+
+
+
+
+// ---------------------------------------------------------------------------------
+// Function definitions are below.
+// ---------------------------------------------------------------------------------
+
 
 void moveForward(int speed, int duration) {
   analogWrite(left_motor_forward, speed);

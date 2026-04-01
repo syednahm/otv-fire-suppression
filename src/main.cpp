@@ -32,7 +32,9 @@ void moveForward(int distance);
 void moveBackward(int speed, int duration);
 void turnLeft(int angle);
 void turnRight(int angle);
+void turnToAngle(int angle);
 int angleDifference(int from, int to);
+int normalizedAngleDiff(int from, int to);
 int getAngle();
 
 // IR function
@@ -185,12 +187,32 @@ void turnRight(int angle) {
   analogWrite(right_motor_backward, 0);
 }
 
+// Turns the OTV to a specific angle (-180 to 180 degrees) using the shortest path.
+void turnToAngle(int angle) {
+  int currAng = getAngle();
+  int diff = normalizedAngleDiff(currAng, angle);
+  
+  if (diff < 0) {
+    turnRight(abs(diff));
+  } else {
+    turnLeft(abs(diff));
+  }
+}
+
 // Helper to compute the difference between two angles (degrees, always positive)
 int angleDifference(int from, int to) {
   int diff = to - from;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
   return abs(diff);
+}
+
+// Returns the difference between two angles (degrees) normalized to the range -180 to 180, where positive means "to" is clockwise from "from" and negative means "to" is counterclockwise from "from".
+int normalizedAngleDiff(int from, int to) {
+  int diff = to - from;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return diff;
 }
 
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)

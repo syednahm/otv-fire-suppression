@@ -110,7 +110,7 @@ void loop() {
   // Read localization / vision info and print
   // float x, y, t; bool v;
   // x = Enes100.getX();
-  // y = Enes100.getY();
+  int y = Enes100.getY();
   // t = Enes100.getTheta();
   // v = Enes100.isVisible();
 
@@ -319,3 +319,15 @@ int checkTopography() {
     return -1; // None
   }
 }
+
+void detectStartZoneAorB(){
+  int y = Enes100.getY();
+  if (y > 1.0) { //need to adjust after testing
+    startZone = 'A';
+    Serial.println("Starting in Zone A");
+  } else {
+    startZone = 'B';
+    Serial.println("Starting in Zone B");
+  }
+}
+

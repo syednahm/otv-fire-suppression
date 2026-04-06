@@ -95,11 +95,17 @@ void loop() {
 
   // First checks to see if old task is completed and also if new task is uncompleted.
   if (topographyReached == 1 && safeZoneReached == 0) {
-    ;
+    detectTopographyLocationAorB();
+
+    if (topZone == 'A') { 
+      navigateToEndZoneWhenTopAtA();
+      safeZoneReached = 1;
+  } else if (topZone == 'B') {
+     // navigateToEndZoneWhenTopAtB(); (uncomment when implemented)
+     Serial.println("not implemented yet");
+      safeZoneReached = 1;
   }
-
-
-
+  }
 
 
 
@@ -110,7 +116,7 @@ void loop() {
   // Read localization / vision info and print
   // float x, y, t; bool v;
   // x = Enes100.getX();
-  int y = Enes100.getY();
+  // int y = Enes100.getY();
   // t = Enes100.getTheta();
   // v = Enes100.isVisible();
 
@@ -321,13 +327,46 @@ int checkTopography() {
 }
 
 
-void detectStartZoneAorB(){
-  int y = Enes100.getY();
+void detectTopographyLocationAorB(){
+  float y = Enes100.getY();
   if (y > 1.0) { //need to adjust after testing
-    startZone = 'A';
-    Serial.println("Starting in Zone A");
+    topZone = 'A';
+    Serial.println("Topography in Zone A");
   } else {
-    startZone = 'B';
-    Serial.println("Starting in Zone B");
+    topZone = 'B';
+    Serial.println("Topography in Zone B");
   }
 }
+//void navigateToEndZoneWhenTopAtB(){
+  //;need to implement this  
+//}
+
+
+//navigating to end zone from top location A
+void navigateToEndZoneWhenTopAtA(){
+  moveBackward(150, 500); //move backward to clear the topography area
+  turnToAngle(getAngle()-90); //turn 90 degrees clockwise and face right
+  moveForward(150,900); //move forward to leave landing/mission zone
+  turnToAngle(getAngle()+90); //turn 90 degrees CCW and face up
+
+  //otv moves ahead until its 3 cm from the wall, 
+  //will probably have to adjust the 3 cm threshold depending on how wide the turn is
+  while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
+    analogWrite(left_motor_forward, 150);
+    analogWrite(right_motor_forward, 150);
+    delay(50);
+  }
+
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_forward, 0);
+
+  turnToAngle(getAngle()-90); //turn 90 degrees clockwise and face direction of end zone
+
+  moveForward(150, 1000); //move forward into end zone, may need to adjust  after testing
+
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_forward, 0);
+
+  Serial.println("Reached end zone from topographylocation A");
+}
+

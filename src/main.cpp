@@ -319,15 +319,3 @@ int checkTopography() {
     return -1; // None
   }
 }
-
-void detectStartZoneAorB(){
-  int y = Enes100.getY();
-  if (y > 1.0) { //need to adjust after testing
-    startZone = 'A';
-    Serial.println("Starting in Zone A");
-  } else {
-    startZone = 'B';
-    Serial.println("Starting in Zone B");
-  }
-}
-

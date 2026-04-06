@@ -23,6 +23,7 @@ short topographyReached = 0;
 short safeZoneReached = 0;
 int topography;
 int globalFireCount = 1;
+char startZone;
 
 // Team info for Enes100
 byte teamType = FIRE;

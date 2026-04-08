@@ -327,7 +327,7 @@ int checkTopography() {
 }
 
 
-void detectTopographyLocationAorB(){
+void detectTopographyLocationAtB(){
   float y = Enes100.getY();
   if (y > 1.0) { //need to adjust after testing
     topZone = 'A';
@@ -337,10 +337,28 @@ void detectTopographyLocationAorB(){
     Serial.println("Topography in Zone B");
   }
 }
-//void navigateToEndZoneWhenTopAtB(){
-  //;need to implement this  
-//}
 
+//void navigateToEndZoneWhenTopAtB()
+void navigateToEndZoneWhenTopAtB(){
+moveBackward (150,150); // move backward to clear the topograpghy area
+turnToAngle(getAngle()-90); // turn 90 degrees CW and face right (need to test)
+moveForward(150,900); //move forward to leave mission area
+turnToAngle(getAngle()+90); // turn 90 degrees CCW and face right (need to test)
+
+//otv will be facing the wall and will move until its 3cm from the wall
+while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
+  analogWrite(left_motor_forward, 150);
+  analogWrite(right_motor_forward, 150);
+  delay(50);
+}
+analogWrite(left_motor_forward, 150);
+analogWrite(right_motor_forward, 150);
+
+turnToAngle(getAngle()-90); //turn 90 degrees CW and face direction of end zone
+moveForward(150, 1000); //move forward into end zone and under the arch, may need to adjust when testing
+
+Serial.PrintLn("Reacheed end zone from topograpghy location B");
+}
 
 //navigating to end zone from top location A
 void navigateToEndZoneWhenTopAtA(){
@@ -369,4 +387,3 @@ void navigateToEndZoneWhenTopAtA(){
 
   Serial.println("Reached end zone from topographylocation A");
 }
-

@@ -100,11 +100,10 @@ void loop() {
     if (topZone == 'A') { 
       navigateToEndZoneWhenTopAtA();
       safeZoneReached = 1;
-  } else if (topZone == 'B') {
-     // navigateToEndZoneWhenTopAtB(); (uncomment when implemented)
-     Serial.println("not implemented yet");
+    } else if (topZone == 'B') {
+      navigateToEndZoneWhenTopAtB();
       safeZoneReached = 1;
-  }
+    }
   }
 
 
@@ -327,7 +326,7 @@ int checkTopography() {
 }
 
 
-void detectTopographyLocationAtB(){
+void detectTopographyLocationAorB(){
   float y = Enes100.getY();
   if (y > 1.0) { //need to adjust after testing
     topZone = 'A';
@@ -340,32 +339,32 @@ void detectTopographyLocationAtB(){
 
 //void navigateToEndZoneWhenTopAtB()
 void navigateToEndZoneWhenTopAtB(){
-moveBackward (150,150); // move backward to clear the topograpghy area
-turnToAngle(getAngle()-90); // turn 90 degrees CW and face right (need to test)
-moveForward(150,900); //move forward to leave mission area
-turnToAngle(getAngle()+90); // turn 90 degrees CCW and face right (need to test)
+  moveBackward (150,150); // move backward to clear the topograpghy area
+  turnRight(90); // turn 90 degrees CW and face right (need to test)
+  moveForward(150,900); //move forward to leave mission area
+  turnLeft(90); // turn 90 degrees CCW and face right (need to test)
 
-//otv will be facing the wall and will move until its 3cm from the wall
-while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
+  //otv will be facing the wall and will move until its 3cm from the wall
+  while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
+    analogWrite(left_motor_forward, 150);
+    analogWrite(right_motor_forward, 150);
+    delay(50);
+  }
   analogWrite(left_motor_forward, 150);
   analogWrite(right_motor_forward, 150);
-  delay(50);
-}
-analogWrite(left_motor_forward, 150);
-analogWrite(right_motor_forward, 150);
 
-turnToAngle(getAngle()-90); //turn 90 degrees CW and face direction of end zone
-moveForward(150, 1000); //move forward into end zone and under the arch, may need to adjust when testing
+  turnRight(90); //turn 90 degrees CW and face direction of end zone
+  moveForward(150, 1000); //move forward into end zone and under the arch, may need to adjust when testing
 
-Serial.PrintLn("Reacheed end zone from topograpghy location B");
+  Serial.println("Reached end zone from topography location B");
 }
 
 //navigating to end zone from top location A
 void navigateToEndZoneWhenTopAtA(){
   moveBackward(150, 500); //move backward to clear the topography area
-  turnToAngle(getAngle()-90); //turn 90 degrees clockwise and face right
+  turnRight(90); //turn 90 degrees clockwise and face right
   moveForward(150,900); //move forward to leave landing/mission zone
-  turnToAngle(getAngle()+90); //turn 90 degrees CCW and face up
+  turnLeft(90); //turn 90 degrees CCW and face up
 
   //otv moves ahead until its 3 cm from the wall, 
   //will probably have to adjust the 3 cm threshold depending on how wide the turn is
@@ -378,12 +377,12 @@ void navigateToEndZoneWhenTopAtA(){
   analogWrite(left_motor_forward, 0);
   analogWrite(right_motor_forward, 0);
 
-  turnToAngle(getAngle()-90); //turn 90 degrees clockwise and face direction of end zone
+  turnRight(90); //turn 90 degrees clockwise and face direction of end zone
 
-  moveForward(150, 1000); //move forward into end zone, may need to adjust  after testing
+  moveForward(150, 1000); //move forward into end zone, may need to adjust after testing
 
   analogWrite(left_motor_forward, 0);
   analogWrite(right_motor_forward, 0);
 
-  Serial.println("Reached end zone from topographylocation A");
+  Serial.println("Reached end zone from topography location A");
 }

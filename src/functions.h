@@ -48,4 +48,7 @@ float getAngle();
 // IR function
 void irSensorReadings();
 void detectStartZoneAorB();
+void detectTopographyLocationAorB();
+void navigateToEndZoneWhenTopAtB();
+void navigateToEndZoneWhenTopAtA();
 int checkTopgraphy();

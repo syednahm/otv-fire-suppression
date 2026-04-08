@@ -238,6 +238,24 @@ void turnRight(float angle) {
   analogWrite(right_motor_backward, 0);
 }
 
+void turnToAngle(int angle) {
+  int currAng = getAngle();
+  int diff = normalizedAngleDiff(currAng, angle);
+  
+  if (diff < 0) {
+    turnRight(abs(diff));
+  } else {
+    turnLeft(abs(diff));
+  }
+}
+
+int normalizedAngleDiff(int from, int to) {
+  int diff = to - from;
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  return diff;
+}
+
 // Helper to compute the difference between two angles (degrees, always positive)
 float angleDifference(float from, float to) {
   float diff = to - from;

@@ -199,7 +199,7 @@ void moveBackward(int speed, int duration) {
   analogWrite(right_motor_backward, 0);
 }
 
-void turnLeft(int angle) {
+void turnLeft(float angle) {
   float startAngle = getAngle();
   float targetRotation = angle;  // how much to rotate (degrees)
   float rotated = 0;
@@ -238,9 +238,9 @@ void turnRight(float angle) {
   analogWrite(right_motor_backward, 0);
 }
 
-void turnToAngle(int angle) {
-  int currAng = getAngle();
-  int diff = normalizedAngleDiff(currAng, angle);
+void turnToAngle(float angle) {
+  float currAng = getAngle();
+  float diff = normalizedAngleDiff(currAng, angle);
   
   if (diff < 0) {
     turnRight(abs(diff));
@@ -249,8 +249,8 @@ void turnToAngle(int angle) {
   }
 }
 
-int normalizedAngleDiff(int from, int to) {
-  int diff = to - from;
+float normalizedAngleDiff(float from, float to) {
+  float diff = to - from;
   if (diff > 180) diff -= 360;
   if (diff < -180) diff += 360;
   return diff;

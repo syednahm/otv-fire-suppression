@@ -38,11 +38,13 @@ int roomNumber = 1120;
 void moveForward(int speed, int duration);
 void moveForward(float distance);
 void moveBackward(int speed, int duration);
-void turnLeft(int angle);
-void turnRight(int angle);
-void turnToAngle(int angle);
-int angleDifference(int from, int to);
-int normalizedAngleDiff(int from, int to);
+void turnLeft(float angle);
+void turnRight(float angle);
+void turnToAngle(float angle);
+void correctAngle(float leftDistance, float rightDistance);
+float angleDifference(float from, float to);
+float normalizedAngleDiff(float from, float to);
+float calculateDistance(int trigPin, int echoPin);
 float getAngle();
 
 // IR function

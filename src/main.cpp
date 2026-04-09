@@ -200,7 +200,7 @@ void moveBackward(int speed, int duration) {
 }
 
 void turnLeft(float angle) {
-  float startAngle = getAngle();
+  float prevAngle = getAngle();
   float targetRotation = angle;  // how much to rotate (degrees)
   float rotated = 0;
 
@@ -210,9 +210,13 @@ void turnLeft(float angle) {
 
   // Loop until rotated enough
   while (rotated < targetRotation) {
-    float currentAngle = getAngle();
-    rotated = angleDifference(startAngle, currentAngle);
     delay(10);
+    float currentAngle = getAngle();
+    float delta = prevAngle - currentAngle;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    rotated += abs(delta);
+    prevAngle = currentAngle;
   }
 
   // Stop motors
@@ -221,7 +225,7 @@ void turnLeft(float angle) {
 }
 
 void turnRight(float angle) {
-  float startAngle = getAngle();
+  float prevAngle = getAngle();
   float targetRotation = angle;
   float rotated = 0;
 
@@ -229,9 +233,13 @@ void turnRight(float angle) {
   analogWrite(right_motor_backward, 150);
 
   while (rotated < targetRotation) {
-    float currentAngle = getAngle();
-    rotated = angleDifference(startAngle, currentAngle);
     delay(10);
+    float currentAngle = getAngle();
+    float delta = currentAngle - prevAngle;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    rotated += abs(delta);
+    prevAngle = currentAngle;
   }
 
   analogWrite(left_motor_forward, 0);
@@ -266,8 +274,8 @@ float angleDifference(float from, float to) {
 
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
 float getAngle() {
+  if (!Enes100.isVisible()) return getAngle();
   float theta = Enes100.getTheta();
-  if (theta == -1) return 0; // If aruco marker is not visible, return 0 as fallback
   return theta * 180.0 / PI;
 }
 
@@ -303,8 +311,10 @@ void irSensorReadings(){
 float calculateDistance(int trigPin, int echoPin) {
   int duration;
   float distance;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
-  delay(10);
+  delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   
   duration = pulseIn(echoPin, HIGH);

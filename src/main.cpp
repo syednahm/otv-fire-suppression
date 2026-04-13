@@ -399,6 +399,7 @@ void navigateToEndZoneWhenTopAtA(){
   while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
     analogWrite(left_motor_forward, 150);
     analogWrite(right_motor_forward, 150);
+    turnToAngle(90);
     delay(50);
   }
 

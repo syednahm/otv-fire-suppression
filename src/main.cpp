@@ -5,10 +5,6 @@ void setup() {
   // Start serial first for debug output
   Serial.begin(9600);
 
-  // WiFi module pins
-  pinMode(wifiModuleTX, OUTPUT);
-  pinMode(wifiModuleRX, INPUT);
-
   // Initialize Enes100 (vision / localization)
   Enes100.begin(teamName, teamType, markerId, roomNumber, wifiModuleTX, wifiModuleRX);
 

@@ -2,18 +2,20 @@
 #include <Enes100.h>
 
 // put pin definitions here:
-const int mid_switch = 2;
-const int right_switch = 4;
+const int mid_switch = A2;
+const int right_switch = A3;
 const int left_motor_forward = 3;
-const int left_motor_backward = 5;
-const int right_motor_forward = 6;
-const int right_motor_backward = 9;
-const int dist_sensor_trigs = 7;
+const int left_motor_backward = 4;
+const int right_motor_forward = 5;
+const int right_motor_backward = 6;
+const int enableLeftMotor = 2;
+const int enableRightMotor = 7;
+const int dist_sensor_trigs = 10;
 const int dist_sensor_left_echo = 8;
-const int dist_sensor_right_echo = 13;
+const int dist_sensor_right_echo = 9;
 const int ir_sensor_left = A0;
 const int ir_sensor_right = A1;
-const int fans = 10;
+const int fans = 13;
 const int wifiModuleTX = 11;
 const int wifiModuleRX = 12;
 

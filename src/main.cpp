@@ -242,8 +242,10 @@ void turnRight(float angle) {
   float targetRotation = angle;
   float rotated = 0;
 
-  analogWrite(left_motor_forward, 150);
-  analogWrite(right_motor_backward, 150);
+  digitalWrite(left_motor_forward, HIGH);
+  digitalWrite(right_motor_backward, HIGH);
+  analogWrite(enableLeftMotor, 50);
+  analogWrite(enableRightMotor, 50);
 
   while (rotated < targetRotation) {
     delay(10);
@@ -255,8 +257,10 @@ void turnRight(float angle) {
     prevAngle = currentAngle;
   }
 
-  analogWrite(left_motor_forward, 0);
-  analogWrite(right_motor_backward, 0);
+  digitalWrite(left_motor_forward, LOW);
+  digitalWrite(right_motor_backward, LOW);
+  analogWrite(enableLeftMotor, 0);
+  analogWrite(enableRightMotor, 0);
 }
 
 void turnToAngle(float angle) {

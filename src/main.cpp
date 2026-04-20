@@ -170,8 +170,8 @@ void moveForward(float distance) {
   // Turn on both motors
   digitalWrite(left_motor_forward, HIGH);
   digitalWrite(right_motor_forward, HIGH);
-  analogWrite(enableLeftMotor, HIGH);
-  analogWrite(enableRightMotor, HIGH);
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
 
   // Keep moving until we reach the target position
   while (true) {
@@ -190,18 +190,20 @@ void moveForward(float distance) {
   }
 
   // Stop both motors
-  digitalWrite(left_motor_forward, 0);
-  digitalWrite(right_motor_forward, 0);
-  analogWrite(enableLeftMotor, LOW);
-  analogWrite(enableRightMotor,LOW);
+  digitalWrite(left_motor_forward, LOW);
+  digitalWrite(right_motor_forward, LOW);
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
 }
 
 void moveBackward(int speed, int duration) {
-  analogWrite(left_motor_backward, speed);
-  analogWrite(right_motor_backward, speed);
+  digitalWrite(left_motor_backward, HIGH);
+  digitalWrite(right_motor_backward, HIGH);
   delay(duration);
-  analogWrite(left_motor_backward, 0);
-  analogWrite(right_motor_backward, 0);
+  digitalWrite(left_motor_backward, 0);
+  digitalWrite(right_motor_backward, 0);
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
 }
 
 void turnLeft(float angle) {
@@ -210,8 +212,11 @@ void turnLeft(float angle) {
   float rotated = 0;
 
   // Drive left turn motors
-  analogWrite(left_motor_backward, 150);
-  analogWrite(right_motor_forward, 150);
+  digitalWrite(left_motor_backward, HIGH);
+  digitalWrite(right_motor_forward, HIGH);
+  delay(1000); // Adjust delay as needed
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
 
   // Loop until rotated enough
   while (rotated < targetRotation) {
@@ -225,8 +230,11 @@ void turnLeft(float angle) {
   }
 
   // Stop motors
-  analogWrite(left_motor_backward, 0);
-  analogWrite(right_motor_forward, 0);
+  analogWrite(left_motor_backward, LOW);
+  analogWrite(right_motor_forward, LOW);
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
+
 }
 
 void turnRight(float angle) {

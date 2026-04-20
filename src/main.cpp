@@ -150,8 +150,8 @@ void moveForward(int speed, int duration) {
   delay(duration);
   digitalWrite(left_motor_forward, 0);
   digitalWrite(right_motor_forward, 0);// what should this value be ?????
-  analogWrite(enableLeftMotor, 150);
-  analogWrite(enableRightMotor, 150);
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
 }
 
 // Move forward using distance (meters) instead of time and speed.
@@ -168,8 +168,10 @@ void moveForward(float distance) {
   float targetY = startY + distance * sin(angle);
 
   // Turn on both motors
-  analogWrite(left_motor_forward, MOTOR_SPEED);
-  analogWrite(right_motor_forward, MOTOR_SPEED);
+  digitalWrite(left_motor_forward, HIGH);
+  digitalWrite(right_motor_forward, HIGH);
+  analogWrite(enableLeftMotor, HIGH);
+  analogWrite(enableRightMotor, HIGH);
 
   // Keep moving until we reach the target position
   while (true) {
@@ -188,8 +190,10 @@ void moveForward(float distance) {
   }
 
   // Stop both motors
-  analogWrite(left_motor_forward, 0);
-  analogWrite(right_motor_forward, 0);
+  digitalWrite(left_motor_forward, 0);
+  digitalWrite(right_motor_forward, 0);
+  analogWrite(enableLeftMotor, LOW);
+  analogWrite(enableRightMotor,LOW);
 }
 
 void moveBackward(int speed, int duration) {

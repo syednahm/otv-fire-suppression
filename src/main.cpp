@@ -22,6 +22,12 @@ void setup() {
   pinMode(right_motor_backward, OUTPUT);
   pinMode(enableLeftMotor, OUTPUT);
   pinMode(enableRightMotor, OUTPUT);
+  digitalWrite(left_motor_forward, LOW);
+  digitalWrite(left_motor_backward, LOW);
+  digitalWrite(right_motor_forward, LOW);
+  digitalWrite(right_motor_backward, LOW);
+  analogWrite(enableLeftMotor, 0);
+  analogWrite(enableRightMotor, 0);
 
 
   // IR sensors and fans
@@ -201,9 +207,11 @@ void moveForward(float distance) {
 void moveBackward(int speed, int duration) {
   digitalWrite(left_motor_backward, HIGH);
   digitalWrite(right_motor_backward, HIGH);
+  analogWrite(enableLeftMotor, speed);
+  analogWrite(enableRightMotor, speed);
   delay(duration);
-  digitalWrite(left_motor_backward, 0);
-  digitalWrite(right_motor_backward, 0);
+  digitalWrite(left_motor_backward, LOW);
+  digitalWrite(right_motor_backward, LOW);
   analogWrite(enableLeftMotor, speed);
   analogWrite(enableRightMotor, speed);
 }

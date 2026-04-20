@@ -230,8 +230,8 @@ void turnLeft(float angle) {
   }
 
   // Stop motors
-  analogWrite(left_motor_backward, LOW);
-  analogWrite(right_motor_forward, LOW);
+  digitalWrite(left_motor_backward, LOW);
+  digitalWrite(right_motor_forward, LOW);
   analogWrite(enableLeftMotor, speed);
   analogWrite(enableRightMotor, speed);
 

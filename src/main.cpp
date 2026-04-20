@@ -24,6 +24,9 @@ void setup() {
   pinMode(left_motor_backward, OUTPUT);
   pinMode(right_motor_forward, OUTPUT);
   pinMode(right_motor_backward, OUTPUT);
+  pinMode(enableLeftMotor, OUTPUT);
+  pinMode(enableRightMotor, OUTPUT);
+
 
   // IR sensors and fans
   pinMode(ir_sensor_left, INPUT);

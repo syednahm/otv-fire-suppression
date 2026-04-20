@@ -170,8 +170,8 @@ void moveForward(float distance) {
   // Turn on both motors
   digitalWrite(left_motor_forward, HIGH);
   digitalWrite(right_motor_forward, HIGH);
-  analogWrite(enableLeftMotor, speed);
-  analogWrite(enableRightMotor, speed);
+  analogWrite(enableLeftMotor, 50);
+  analogWrite(enableRightMotor, 50);
 
   // Keep moving until we reach the target position
   while (true) {
@@ -192,8 +192,8 @@ void moveForward(float distance) {
   // Stop both motors
   digitalWrite(left_motor_forward, LOW);
   digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, speed);
-  analogWrite(enableRightMotor, speed);
+  analogWrite(enableLeftMotor, 0);
+  analogWrite(enableRightMotor, 0);
 }
 
 void moveBackward(int speed, int duration) {
@@ -215,8 +215,8 @@ void turnLeft(float angle) {
   digitalWrite(left_motor_backward, HIGH);
   digitalWrite(right_motor_forward, HIGH);
   delay(1000); // Adjust delay as needed
-  analogWrite(enableLeftMotor, speed);
-  analogWrite(enableRightMotor, speed);
+  analogWrite(enableLeftMotor, 50);
+  analogWrite(enableRightMotor, 50);
 
   // Loop until rotated enough
   while (rotated < targetRotation) {
@@ -232,8 +232,8 @@ void turnLeft(float angle) {
   // Stop motors
   digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, speed);
-  analogWrite(enableRightMotor, speed);
+  analogWrite(enableLeftMotor, 0);
+  analogWrite(enableRightMotor, 0);
 
 }
 

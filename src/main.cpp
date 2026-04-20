@@ -153,6 +153,8 @@ void loop() {
 void moveForward(int speed, int duration) {
   digitalWrite(left_motor_forward, HIGH);
   digitalWrite(right_motor_forward, HIGH);
+  digitalWrite(left_motor_backward, LOW);
+  digitalWrite(right_motor_backward, LOW);
   analogWrite(enableLeftMotor, speed);
   analogWrite(enableRightMotor, speed);
   delay(duration);
@@ -177,7 +179,9 @@ void moveForward(float distance) {
 
   // Turn on both motors
   digitalWrite(left_motor_forward, HIGH);
+  digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_forward, HIGH);
+  digitalWrite(right_motor_forward, LOW);
   analogWrite(enableLeftMotor, 50);
   analogWrite(enableRightMotor, 50);
 
@@ -206,7 +210,9 @@ void moveForward(float distance) {
 
 void moveBackward(int speed, int duration) {
   digitalWrite(left_motor_backward, HIGH);
+  digitalWrite(left_motor_forward, LOW);
   digitalWrite(right_motor_backward, HIGH);
+  digitalWrite(right_motor_forward, LOW);
   analogWrite(enableLeftMotor, speed);
   analogWrite(enableRightMotor, speed);
   delay(duration);
@@ -223,7 +229,9 @@ void turnLeft(float angle) {
 
   // Drive left turn motors
   digitalWrite(left_motor_backward, HIGH);
+  digitalWrite(left_motor_forward, LOW);
   digitalWrite(right_motor_forward, HIGH);
+  digitalWrite(right_motor_backward, LOW);
   analogWrite(enableLeftMotor, 50);
   analogWrite(enableRightMotor, 50);
 
@@ -252,7 +260,10 @@ void turnRight(float angle) {
   float rotated = 0;
 
   digitalWrite(left_motor_forward, HIGH);
+  digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_backward, HIGH);
+  digitalWrite(right_motor_forward, LOW);
+
   analogWrite(enableLeftMotor, 50);
   analogWrite(enableRightMotor, 50);
 
@@ -393,7 +404,7 @@ void detectTopographyLocationAorB(){
 
 //void navigateToEndZoneWhenTopAtB()
 void navigateToEndZoneWhenTopAtB(){
-  moveBackward (150,150); // move backward to clear the topograpghy area
+  moveBackward(150,150); // move backward to clear the topograpghy area
   turnRight(90); // turn 90 degrees CW and face right (need to test)
   moveForward(150,900); //move forward to leave mission area
   turnLeft(90); // turn 90 degrees CCW and face right (need to test)

@@ -145,11 +145,13 @@ void loop() {
 
 
 void moveForward(int speed, int duration) {
-  analogWrite(left_motor_forward, speed);
-  analogWrite(right_motor_forward, speed);
+  digitalWrite(left_motor_forward, HIGH);
+  digitalWrite(right_motor_forward, HIGH);
   delay(duration);
-  analogWrite(left_motor_forward, 0);
-  analogWrite(right_motor_forward, 0);
+  digitalWrite(left_motor_forward, 0);
+  digitalWrite(right_motor_forward, 0);// what should this value be ?????
+  analogWrite(enableLeftMotor, 150);
+  analogWrite(enableRightMotor, 150);
 }
 
 // Move forward using distance (meters) instead of time and speed.

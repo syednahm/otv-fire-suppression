@@ -181,8 +181,8 @@ void moveForward(float distance) {
   digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_forward, HIGH);
   digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 50);
-  analogWrite(enableRightMotor, 50);
+  analogWrite(enableLeftMotor, 150);
+  analogWrite(enableRightMotor, 150);
 
   // Keep moving until we reach the target position
   while (true) {

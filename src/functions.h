@@ -4,10 +4,10 @@
 // put pin definitions here:
 const int mid_switch = A2;
 const int right_switch = A3;
-const int left_motor_forward = 3;
-const int left_motor_backward = 4;
-const int right_motor_forward = 5;
-const int right_motor_backward = 6;
+const int left_motor_forward = 4;
+const int left_motor_backward = 3;
+const int right_motor_forward = 6;
+const int right_motor_backward = 5;
 const int enableLeftMotor = 2;
 const int enableRightMotor = 7;
 const int dist_sensor_trigs = 10;

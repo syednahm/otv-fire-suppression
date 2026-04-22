@@ -168,8 +168,6 @@ void moveForward(int speed, int duration) {
 // Move forward using distance (meters) instead of time and speed.
 // MAY need to change this to rely on timing and speed.
 void moveForward(float distance) {
-  const int MOTOR_SPEED = 150;
-
   float startX = Enes100.getX();
   float startY = Enes100.getY();
   float angle = Enes100.getTheta(); // angle in radians

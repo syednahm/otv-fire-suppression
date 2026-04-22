@@ -56,9 +56,10 @@ void loop() {
       turnToAngle(-90);
       float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
-      if (distanceToTop > SAFE_STOP_DISTANCE) {
+      while (distanceToTop > SAFE_STOP_DISTANCE) {
         distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-        moveForward(distanceToTop - SAFE_STOP_DISTANCE);
+        moveForward(50, 100);
+        turnToAngle(-90);
       }
       turnToAngle(-90);
     } else {
@@ -66,9 +67,10 @@ void loop() {
       turnToAngle(90);
       float distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
-      if (distanceToBottom > SAFE_STOP_DISTANCE) {
+      while (distanceToBottom > SAFE_STOP_DISTANCE) {
         distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-        moveForward(distanceToBottom - SAFE_STOP_DISTANCE);
+        moveForward(50, 100);
+        turnToAngle(90);
       }
       turnToAngle(90);
     }

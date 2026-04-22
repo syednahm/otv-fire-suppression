@@ -85,7 +85,7 @@ void loop() {
     irSensorReadings();
     moveForward(0.15);
     irSensorReadings();
-    topography = checkTopgraphy();
+    topography = checkTopography();
     
     if (topography != -1) {
       Enes100.mission(TOPOGRAPHY, topography);
@@ -110,6 +110,12 @@ void loop() {
       safeZoneReached = 1;
     }
   }
+
+
+
+
+
+
 
   // Read localization / vision info and print
   // float x, y, t; bool v;
@@ -399,47 +405,26 @@ void detectTopographyLocationAorB(){
 //void navigateToEndZoneWhenTopAtB()
 void navigateToEndZoneWhenTopAtB(){
   moveBackward(150,150); // move backward to clear the topograpghy area
-  turnLeft(90); // turn 90 degrees CW and face right (need to test)
+  turnRight(90); // turn 90 degrees CW and face right (need to test)
   moveForward(150,900); //move forward to leave mission area
   turnLeft(90); // turn 90 degrees CCW and face right (need to test)
-  turnToAngle(90); // ensure we are facing the wall
 
   //otv will be facing the wall and will move until its 3cm from the wall
-  float curr = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-  while(curr > 0.03) {
-    digitalWrite(left_motor_forward, HIGH);
-    digitalWrite(left_motor_backward, LOW);
-    digitalWrite(right_motor_forward, HIGH);
-    digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 150);
-    analogWrite(enableRightMotor, 150);
-    turnToAngle(90); // keep facing the wall
-    curr = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+  while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
+    analogWrite(left_motor_forward, 150);
+    analogWrite(right_motor_forward, 150);
     delay(50);
   }
-  digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
+  analogWrite(left_motor_forward, 150);
+  analogWrite(right_motor_forward, 150);
 
-  turnToAngle(0); //turn 90 degrees CW and face direction of end zone
-  float currX = Enes100.getX();
-  while (currX < 1.6) {
-    digitalWrite(left_motor_forward, HIGH);
-    digitalWrite(left_motor_backward, LOW);
-    digitalWrite(right_motor_forward, HIGH);
-    digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 150);
-    analogWrite(enableRightMotor, 150);
-    turnToAngle(0); // keep facing the wall
-    currX = Enes100.getX();
-    delay(50);
-  }
+  turnRight(90); //turn 90 degrees CW and face direction of end zone
+  moveForward(150, 1000); //move forward into end zone and under the arch, may need to adjust when testing
 
   Serial.println("Reached end zone from topography location B");
 }
 
-// navigating to end zone from top location A
+//navigating to end zone from top location A
 void navigateToEndZoneWhenTopAtA(){
   moveBackward(150, 500); //move backward to clear the topography area
   turnRight(90); //turn 90 degrees clockwise and face right
@@ -448,36 +433,22 @@ void navigateToEndZoneWhenTopAtA(){
 
   //otv moves ahead until its 3 cm from the wall, 
   //will probably have to adjust the 3 cm threshold depending on how wide the turn is
-  float curr = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-  while(curr > 0.03) {
-    digitalWrite(left_motor_forward, HIGH);
-    digitalWrite(left_motor_backward, LOW);
-    digitalWrite(right_motor_forward, HIGH);
-    digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 150);
-    analogWrite(enableRightMotor, 150);
+  while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
+    analogWrite(left_motor_forward, 150);
+    analogWrite(right_motor_forward, 150);
     turnToAngle(90);
-    curr = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     delay(50);
   }
-  digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
 
-  turnToAngle(0); //turn 90 degrees CW and face direction of end zone
-  float currX = Enes100.getX();
-  while (currX < 1.6) {
-    digitalWrite(left_motor_forward, HIGH);
-    digitalWrite(left_motor_backward, LOW);
-    digitalWrite(right_motor_forward, HIGH);
-    digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 150);
-    analogWrite(enableRightMotor, 150);
-    turnToAngle(0);
-    currX = Enes100.getX();
-    delay(50);
-  }
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_forward, 0);
+
+  turnRight(90); //turn 90 degrees clockwise and face direction of end zone
+
+  moveForward(150, 1000); //move forward into end zone, may need to adjust after testing
+
+  analogWrite(left_motor_forward, 0);
+  analogWrite(right_motor_forward, 0);
 
   Serial.println("Reached end zone from topography location A");
 }

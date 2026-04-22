@@ -55,4 +55,4 @@ void detectStartZoneAorB();
 void detectTopographyLocationAorB();
 void navigateToEndZoneWhenTopAtB();
 void navigateToEndZoneWhenTopAtA();
-int checkTopgraphy();
+int checkTopography();

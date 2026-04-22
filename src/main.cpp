@@ -1,6 +1,5 @@
 #include "functions.h"
 
-
 void setup() {
   // Start serial first for debug output
   Serial.begin(9600);
@@ -85,7 +84,7 @@ void loop() {
     irSensorReadings();
     moveForward(0.15);
     irSensorReadings();
-    topography = checkTopgraphy();
+    topography = checkTopography();
     
     if (topography != -1) {
       Enes100.mission(TOPOGRAPHY, topography);

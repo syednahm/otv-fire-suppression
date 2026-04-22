@@ -158,7 +158,7 @@ void moveForward(int speed, int duration) {
   analogWrite(enableRightMotor, speed);
   delay(duration);
   digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_forward, LOW);// what should this value be ?????
+  digitalWrite(right_motor_forward, LOW);
   analogWrite(enableLeftMotor, 0);
   analogWrite(enableRightMotor, 0);
 }
@@ -180,7 +180,7 @@ void moveForward(float distance) {
   digitalWrite(left_motor_forward, HIGH);
   digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_forward, HIGH);
-  digitalWrite(right_motor_forward, LOW);
+  digitalWrite(right_motor_backward, LOW);
   analogWrite(enableLeftMotor, 50);
   analogWrite(enableRightMotor, 50);
 

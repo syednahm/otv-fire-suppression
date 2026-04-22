@@ -217,8 +217,8 @@ void moveBackward(int speed, int duration) {
   delay(duration);
   digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, speed);
-  analogWrite(enableRightMotor, speed);
+  analogWrite(enableLeftMotor, 0);
+  analogWrite(enableRightMotor, 0);
 }
 
 void turnLeft(float angle) {
@@ -310,7 +310,7 @@ float angleDifference(float from, float to) {
 
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
 float getAngle() {
-  if (!Enes100.isVisible()) return getAngle();
+  if (!Enes100.isVisible()) return 0; // Or handle appropriately
   float theta = Enes100.getTheta();
   return theta * 180.0 / PI;
 }

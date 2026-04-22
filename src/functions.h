@@ -31,7 +31,7 @@ char topZone;
 byte teamType = FIRE;
 const char* teamName = "Phoenix";
 // replace with Aruco Marker ID.
-int markerId;
+int markerId = 0; // Set your marker ID here
 int roomNumber = 1120;
 
 // put function declarations here:

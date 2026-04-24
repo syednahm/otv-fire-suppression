@@ -58,7 +58,7 @@ void loop() {
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-        moveForward(50, 100);
+        moveForward(150, 150);
         turnToAngle(-90);
       }
       turnToAngle(-90);
@@ -69,7 +69,7 @@ void loop() {
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-        moveForward(50, 100);
+        moveForward(150, 100);
         turnToAngle(90);
       }
       turnToAngle(90);
@@ -222,8 +222,8 @@ void turnLeft(float angle) {
   digitalWrite(left_motor_forward, LOW);
   digitalWrite(right_motor_forward, HIGH);
   digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 50);
-  analogWrite(enableRightMotor, 50);
+  analogWrite(enableLeftMotor, 150);
+  analogWrite(enableRightMotor, 150);
 
   // Loop until rotated enough
   while (rotated < targetRotation) {
@@ -251,8 +251,8 @@ void turnRight(float angle) {
   digitalWrite(right_motor_backward, HIGH);
   digitalWrite(right_motor_forward, LOW);
 
-  analogWrite(enableLeftMotor, 50);
-  analogWrite(enableRightMotor, 50);
+  analogWrite(enableLeftMotor, 150);
+  analogWrite(enableRightMotor, 150);
 
   while (rotated < targetRotation) {
     delay(10);

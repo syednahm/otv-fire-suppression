@@ -49,7 +49,6 @@ void loop() {
 
   if (topographyReached == 0) {
     globalFireCount = 1;
-    Enes100.updateLocation();
     // Top starting point
     Enes100.println(getCorrectY());
     Enes100.println(getCorrectTheta());

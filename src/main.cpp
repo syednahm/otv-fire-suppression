@@ -53,27 +53,25 @@ void loop() {
     Enes100.println(getCorrectY());
     Enes100.println(getCorrectTheta());
     if (getCorrectY() > 1.0) {
-      turnToAngle(-90);
+     //turn angle was here 
       float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
         moveForward(150, 150);
-        turnToAngle(-90);
       }
-      turnToAngle(-90);
-    } else {
+     //trun angle was here
+     else {
       // Bottom starting point
-      turnToAngle(90);
+     //turn angle was here and messing things up
       float distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
         moveForward(150, 100);
-        turnToAngle(90);
       }
-      turnToAngle(90);
-    }
+//turn angle was here
+    
 
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);

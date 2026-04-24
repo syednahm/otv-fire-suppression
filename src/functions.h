@@ -16,8 +16,8 @@ const int dist_sensor_right_echo = 9;
 const int ir_sensor_left = A0;
 const int ir_sensor_right = A1;
 const int fans = 13;
-const int wifiModuleTX = 11;
-const int wifiModuleRX = 12;
+const int wifiTX = 11;
+const int wifiRX = 12;
 
 
 // Global Variables
@@ -48,6 +48,10 @@ float angleDifference(float from, float to);
 float normalizedAngleDiff(float from, float to);
 float calculateDistance(int trigPin, int echoPin);
 float getAngle();
+float getCorrectX();
+float getCorrectY();
+float getCorrectTheta();
+void stopMotors();
 
 // IR function
 void irSensorReadings();

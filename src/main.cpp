@@ -4,15 +4,14 @@ void setup() {
   // Start serial first for debug output
   Serial.begin(9600);
 
+  pinMode(wifiRX, INPUT);
+  pinMode(wifiTX, OUTPUT);
   // Initialize Enes100 (vision / localization)
-  Enes100.begin(teamName, teamType, markerId, roomNumber, wifiModuleTX, wifiModuleRX);
+  Enes100.begin(teamName, teamType, markerId, roomNumber, wifiTX, wifiRX);
 
   // At this point we know we are connected.
-  if (Enes100.isConnected()) {
-    Serial.println("Connected to vision system!");
-  } else {
-    Serial.println("Failed to connect to vision system.");
-  }
+  
+  Enes100.println("Connected to vision system!");
 
   // Motor pins
   pinMode(left_motor_forward, OUTPUT);
@@ -52,7 +51,9 @@ void loop() {
     globalFireCount = 1;
     Enes100.updateLocation();
     // Top starting point
-    if (Enes100.location.y > 1.0) {
+    Enes100.println(getCorrectY());
+    Enes100.println(getCorrectTheta());
+    if (getCorrectY() > 1.0) {
       turnToAngle(-90);
       float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
@@ -159,18 +160,15 @@ void moveForward(int speed, int duration) {
   analogWrite(enableLeftMotor, speed);
   analogWrite(enableRightMotor, speed);
   delay(duration);
-  digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
+  stopMotors();
 }
 
 // Move forward using distance (meters) instead of time and speed.
 // MAY need to change this to rely on timing and speed.
 void moveForward(float distance) {
-  float startX = Enes100.getX();
-  float startY = Enes100.getY();
-  float angle = Enes100.getTheta(); // angle in radians
+  float startX = getCorrectX();
+  float startY = getCorrectY();
+  float angle = getCorrectTheta(); // angle in radians
 
   // Calculate target position using trig
   float targetX = startX + distance * cos(angle);
@@ -186,8 +184,8 @@ void moveForward(float distance) {
 
   // Keep moving until we reach the target position
   while (true) {
-    float currentX = Enes100.getX();
-    float currentY = Enes100.getY();
+    float currentX = getCorrectX();
+    float currentY = getCorrectY();
 
     // Calculate distance to target
     float distanceToTarget = sqrt(pow(targetX - currentX, 2) + pow(targetY - currentY, 2));
@@ -201,10 +199,7 @@ void moveForward(float distance) {
   }
 
   // Stop both motors
-  digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
+  stopMotors();
 }
 
 void moveBackward(int speed, int duration) {
@@ -215,10 +210,7 @@ void moveBackward(int speed, int duration) {
   analogWrite(enableLeftMotor, speed);
   analogWrite(enableRightMotor, speed);
   delay(duration);
-  digitalWrite(left_motor_backward, LOW);
-  digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
+  stopMotors();
 }
 
 void turnLeft(float angle) {
@@ -246,10 +238,7 @@ void turnLeft(float angle) {
   }
 
   // Stop motors
-  digitalWrite(left_motor_backward, LOW);
-  digitalWrite(right_motor_forward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
+  stopMotors();
 
 }
 
@@ -276,10 +265,7 @@ void turnRight(float angle) {
     prevAngle = currentAngle;
   }
 
-  digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 0);
-  analogWrite(enableRightMotor, 0);
+  stopMotors();
 }
 
 void turnToAngle(float angle) {
@@ -311,7 +297,7 @@ float angleDifference(float from, float to) {
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
 float getAngle() {
   if (!Enes100.isVisible()) return 0; // Or handle appropriately
-  float theta = Enes100.getTheta();
+  float theta = getCorrectTheta(); // get the latest theta value
   return theta * 180.0 / PI;
 }
 
@@ -391,7 +377,7 @@ int checkTopography() {
 
 
 void detectTopographyLocationAorB(){
-  float y = Enes100.getY();
+  float y = getCorrectY();
   if (y > 1.0) { //need to adjust after testing
     topZone = 'A';
     Serial.println("Topography in Zone A");
@@ -450,4 +436,40 @@ void navigateToEndZoneWhenTopAtA(){
   analogWrite(right_motor_forward, 0);
 
   Serial.println("Reached end zone from topography location A");
+}
+
+float getCorrectX() {
+  float x = Enes100.getX();
+  while (x == -1) {
+    x = Enes100.getX();
+    delay(100);
+  }
+  return x;
+}
+
+float getCorrectY() {
+  float y = Enes100.getY();
+  while (y == -1) {
+    y = Enes100.getY();
+    delay(100);
+  }
+  return y;
+}
+
+float getCorrectTheta() {
+  float theta = Enes100.getTheta();
+  while (theta == -1) {
+    theta = Enes100.getTheta();
+    delay(100);
+  }
+  return theta;
+}
+
+void stopMotors() {
+  digitalWrite(left_motor_forward, LOW);
+  digitalWrite(left_motor_backward, LOW);
+  digitalWrite(right_motor_forward, LOW);
+  digitalWrite(right_motor_backward, LOW);
+  analogWrite(enableLeftMotor, 0);
+  analogWrite(enableRightMotor, 0);
 }

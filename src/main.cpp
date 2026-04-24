@@ -53,25 +53,25 @@ void loop() {
     Enes100.println(getCorrectY());
     Enes100.println(getCorrectTheta());
     if (getCorrectY() > 1.0) {
-     //turn angle was here 
+      turnToAngle(-90);
       float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
         moveForward(150, 150);
       }
-     //trun angle was here
-     else {
+      turnToAngle(-90);
+    } else {
       // Bottom starting point
-     //turn angle was here and messing things up
+      turnToAngle(90);
       float distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
         moveForward(150, 100);
       }
-//turn angle was here
-    
+      turnToAngle(90);
+    }
 
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
@@ -94,7 +94,6 @@ void loop() {
       Serial.println("Error: Could not determine topography.");
       moveBackward(150, 1000);
     }
-    
   }
 
   // First checks to see if old task is completed and also if new task is uncompleted.

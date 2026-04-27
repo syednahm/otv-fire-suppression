@@ -59,3 +59,9 @@ void detectTopographyLocationAorB();
 void navigateToEndZoneWhenTopAtB();
 void navigateToEndZoneWhenTopAtA();
 int checkTopography();
+
+// Safe zone navigation functions
+void moveToEnd();
+void moveForwardUntilWall();
+bool isRightFree();
+bool isLeftFree();

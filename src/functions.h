@@ -18,14 +18,14 @@ const int ir_sensor_right = A1;
 const int fans = 13;
 const int wifiTX = 11;
 const int wifiRX = 12;
-// changes pins, 2,3,4,5,7 pins for the motors to move OTV
+// changes pins, 2,3,4,5,7 pins for the motors to move OTV/ and then rechanged them back to orginal pins to test if that is the issue
 
 // Global Variables
 short topographyReached = 0;
 short safeZoneReached = 0;
 int topography = -1;
 int globalFireCount = 1;
-char topZone = 'U';
+char topZone = 'X';
 
 // Team info for Enes100
 byte teamType = FIRE;

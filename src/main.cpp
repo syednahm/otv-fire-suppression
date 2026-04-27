@@ -55,22 +55,22 @@ void loop() {
     if (getCorrectY() > 1.0) {
       //turn angle
       turnToAngle(-90);
-      float distanceToTop = 1.45 - getCorrectY();
+      float distanceToBottom = getCorrectY() - 0.55;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
-      while (distanceToTop > SAFE_STOP_DISTANCE) {
+      while (distanceToBottom > SAFE_STOP_DISTANCE) {
         moveForward(150, 150);
         turnToAngle(-90); // keep facing the topography
-        distanceToTop = 1.45 - getCorrectY();
+        distanceToBottom = getCorrectY() - 0.55;
       }
     } else {
       // Bottom starting point
       turnToAngle(90); // turn 90 degrees CCW to face the topography
-      float distanceToBottom = getCorrectY() - 0.55;
+      float distanceToTop = 1.45 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
-      while (distanceToBottom > SAFE_STOP_DISTANCE) {
+      while (distanceToTop > SAFE_STOP_DISTANCE) {
         moveForward(150, 100);
         turnToAngle(90); // keep facing the topography
-        distanceToBottom = getCorrectY() - 0.55;
+        distanceToTop = 1.45 - getCorrectY();
       }
     }
 

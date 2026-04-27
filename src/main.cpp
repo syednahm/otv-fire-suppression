@@ -101,43 +101,21 @@ void loop() {
   if (topographyReached == 1 && safeZoneReached == 0) {
     detectTopographyLocationAorB();
 
+
     if (topZone == 'A') { 
-      navigateToEndZoneWhenTopAtA();
+      turnToAngle(-90);
+      float distanceToTravel = Enes100.getY() - 1.0;
+      moveForward(distanceToTravel);
+      moveToEnd();
       safeZoneReached = 1;
     } else if (topZone == 'B') {
-      navigateToEndZoneWhenTopAtB();
+      turnToAngle(90);
+      float distanceToTravel = 1.0 - Enes100.getY();
+      moveForward(distanceToTravel);
+      moveToEnd();
       safeZoneReached = 1;
     }
   }
-
-
-
-
-
-
-
-  // Read localization / vision info and print
-  // float x, y, t; bool v;
-  // x = Enes100.getX();
-  // int y = Enes100.getY();
-  // t = Enes100.getTheta();
-  // v = Enes100.isVisible();
-
-  // if (v) {
-  //   Enes100.print(x);
-  //   Enes100.print(",");
-  //   Enes100.print(y);
-  //   Enes100.print(",");
-  //   Enes100.println(t);
-  // } else {
-  //   Enes100.println("Not visible");
-  // }
-
-  // // Transmit mission data (example values)
-  // Enes100.mission(NUM_CANDLES, 4);
-  // Enes100.mission(TOPOGRAPHY, TOP_A);
-
-  // delay(1000);
 }
 
 
@@ -434,6 +412,79 @@ void navigateToEndZoneWhenTopAtA(){
 
   Serial.println("Reached end zone from topography location A");
 }
+
+void moveForwardUntilWall() {
+  while (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.02) { // Move forward until 2 cm from the wall
+    digitalWrite(left_motor_forward, HIGH);
+    digitalWrite(right_motor_forward, HIGH);
+    digitalWrite(left_motor_backward, LOW);
+    digitalWrite(right_motor_backward, LOW);
+    analogWrite(enableLeftMotor, 150);
+    analogWrite(enableRightMotor, 150);
+    turnToAngle(0); // keep facing the wall
+    delay(50);
+  }
+  stopMotors();
+}
+
+void moveToEnd() {
+  moveForwardUntilWall();
+  bool atSecondSet = (getCorrectX() > 1.7);
+  if (isRightFree() && !atSecondSet) {
+    moveForwardUntilWall();
+  } else if (isLeftFree() && !atSecondSet) {
+    moveForwardUntilWall();
+  }
+
+  if (isRightFree()) {
+    while (getCorrectX() < 2.8) {
+      moveForward(150, 100);
+      turnToAngle(0);
+      delay(50);
+    }
+    turnToAngle(90);
+    while (getCorrectY() < 1.5) {
+      moveForward(150, 100);
+      turnToAngle(90);
+      delay(50);
+    }
+    turnToAngle(0);
+  } else if (isLeftFree()) {
+    while (getCorrectX() < 2.8) {
+      moveForward(150, 100);
+      turnToAngle(0);
+      delay(50);
+    }
+  }
+
+  turnToAngle(0);
+  moveForward(1.0); // move forward into end zone, may need to adjust after testing
+}
+
+bool isRightFree() {
+  turnRight(90);
+  float distanceToTravel = getCorrectY() - 0.5;
+  moveForward(distanceToTravel);
+  turnLeft(90);
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.15) { // if more than 15 cm on the right, consider it free
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool isLeftFree() {
+  turnLeft(90);
+  float distanceToTravel = 1.5 - getCorrectY();
+  moveForward(distanceToTravel);
+  turnRight(90);
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.15) { // if more than 15 cm on the left, consider it free
+    return true;
+  } else {
+    return false;
+  }
+}
+
 
 float getCorrectX() {
   float x = Enes100.getX();

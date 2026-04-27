@@ -55,22 +55,22 @@ void loop() {
     if (getCorrectY() > 1.0) {
       //turn angle
       turnToAngle(-90);
-      float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+      float distanceToTop = 1.45 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         moveForward(150, 150);
         turnToAngle(-90); // keep facing the topography
-        distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+        distanceToTop = 1.45 - getCorrectY();
       }
     } else {
       // Bottom starting point
       turnToAngle(90); // turn 90 degrees CCW to face the topography
-      float distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+      float distanceToBottom = getCorrectY() - 0.55;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         moveForward(150, 100);
         turnToAngle(90); // keep facing the topography
-        distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+        distanceToBottom = getCorrectY() - 0.55;
       }
     }
 

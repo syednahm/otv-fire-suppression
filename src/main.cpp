@@ -54,23 +54,24 @@ void loop() {
     Enes100.println(getCorrectTheta());
     if (getCorrectY() > 1.0) {
       //turn angle
+      turnToAngle(-90);
       float distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         distanceToTop = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
         moveForward(150, 150);
-      //turn angle
+        turnToAngle(-90); // keep facing the topography
       }
     } else {
       // Bottom starting point
-      //turn angle
+      turnToAngle(90); // turn 90 degrees CCW to face the topography
       float distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         distanceToBottom = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
         moveForward(150, 100);
+        turnToAngle(90); // keep facing the topography
       }
-      //trun angle
     }
 
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
@@ -211,7 +212,7 @@ void moveBackward(int speed, int duration) {
 
 void turnLeft(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle;  // how much to rotate (degrees)
+  float targetRotation = angle - 3;  // how much to rotate (degrees)
   float rotated = 0;
 
   // Drive left turn motors
@@ -240,7 +241,7 @@ void turnLeft(float angle) {
 
 void turnRight(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle;
+  float targetRotation = angle - 3;
   float rotated = 0;
 
   digitalWrite(left_motor_forward, HIGH);

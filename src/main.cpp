@@ -190,7 +190,7 @@ void moveBackward(int speed, int duration) {
 
 void turnLeft(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle - 3;  // how much to rotate (degrees)
+  float targetRotation = angle - 5;  // how much to rotate (degrees)
   float rotated = 0;
 
   // Drive left turn motors
@@ -219,7 +219,7 @@ void turnLeft(float angle) {
 
 void turnRight(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle - 3;
+  float targetRotation = angle - 5;
   float rotated = 0;
 
   digitalWrite(left_motor_forward, HIGH);

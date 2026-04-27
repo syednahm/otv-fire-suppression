@@ -55,22 +55,21 @@ void loop() {
     if (getCorrectY() > 1.0) {
       //turn angle
       turnToAngle(-90);
-      float distanceToBottom = getCorrectY() - 0.55;
+      float distanceToBottom = getCorrectY() - 0.65;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
-        moveForward(150, 150);
-        turnToAngle(-90); // keep facing the topography
-        distanceToBottom = getCorrectY() - 0.55;
+        moveForward(150, 100);
+        distanceToBottom = getCorrectY() - 0.65;
       }
     } else {
       // Bottom starting point
       turnToAngle(90); // turn 90 degrees CCW to face the topography
-      float distanceToTop = 1.45 - getCorrectY();
+      float distanceToTop = 1.35 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         moveForward(150, 100);
         turnToAngle(90); // keep facing the topography
-        distanceToTop = 1.45 - getCorrectY();
+        distanceToTop = 1.35 - getCorrectY();
       }
     }
 
@@ -190,7 +189,7 @@ void moveBackward(int speed, int duration) {
 
 void turnLeft(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle - 5;  // how much to rotate (degrees)
+  float targetRotation = angle;  // how much to rotate (degrees)
   float rotated = 0;
 
   // Drive left turn motors
@@ -219,7 +218,7 @@ void turnLeft(float angle) {
 
 void turnRight(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle - 5;
+  float targetRotation = angle;
   float rotated = 0;
 
   digitalWrite(left_motor_forward, HIGH);

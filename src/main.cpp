@@ -59,6 +59,7 @@ void loop() {
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         moveForward(130, 100);
+        turnToAngle(-90); // keep facing the topography
         distanceToBottom = getCorrectY() - 0.70;
       }
     } else {

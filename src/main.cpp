@@ -55,21 +55,21 @@ void loop() {
     if (getCorrectY() > 1.0) {
       //turn angle
       turnToAngle(-90);
-      float distanceToBottom = getCorrectY() - 0.65;
+      float distanceToBottom = getCorrectY() - 0.70;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
-        moveForward(150, 100);
-        distanceToBottom = getCorrectY() - 0.65;
+        moveForward(100, 100);
+        distanceToBottom = getCorrectY() - 0.70;
       }
     } else {
       // Bottom starting point
       turnToAngle(90); // turn 90 degrees CCW to face the topography
-      float distanceToTop = 1.35 - getCorrectY();
+      float distanceToTop = 1.30 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToTop > SAFE_STOP_DISTANCE) {
-        moveForward(150, 100);
+        moveForward(100, 100);
         turnToAngle(90); // keep facing the topography
-        distanceToTop = 1.35 - getCorrectY();
+        distanceToTop = 1.30 - getCorrectY();
       }
     }
 
@@ -92,7 +92,7 @@ void loop() {
       Enes100.mission(NUM_CANDLES, globalFireCount);
     } else {
       Serial.println("Error: Could not determine topography.");
-      moveBackward(150, 1000);
+      moveBackward(100, 1000);
     }
   }
 
@@ -153,8 +153,8 @@ void moveForward(float distance) {
   digitalWrite(left_motor_backward, LOW);
   digitalWrite(right_motor_forward, HIGH);
   digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 150);
-  analogWrite(enableRightMotor, 150);
+  analogWrite(enableLeftMotor, 100);
+  analogWrite(enableRightMotor, 100);
 
   // Keep moving until we reach the target position
   while (true) {
@@ -197,8 +197,8 @@ void turnLeft(float angle) {
   digitalWrite(left_motor_forward, LOW);
   digitalWrite(right_motor_forward, HIGH);
   digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 150);
-  analogWrite(enableRightMotor, 150);
+  analogWrite(enableLeftMotor, 100);
+  analogWrite(enableRightMotor, 100);
 
   // Loop until rotated enough
   while (rotated < targetRotation) {
@@ -226,8 +226,8 @@ void turnRight(float angle) {
   digitalWrite(right_motor_backward, HIGH);
   digitalWrite(right_motor_forward, LOW);
 
-  analogWrite(enableLeftMotor, 150);
-  analogWrite(enableRightMotor, 150);
+  analogWrite(enableLeftMotor, 100);
+  analogWrite(enableRightMotor, 100);
 
   while (rotated < targetRotation) {
     delay(10);
@@ -363,38 +363,38 @@ void detectTopographyLocationAorB(){
 
 //void navigateToEndZoneWhenTopAtB()
 void navigateToEndZoneWhenTopAtB(){
-  moveBackward(150,150); // move backward to clear the topograpghy area
+  moveBackward(100,150); // move backward to clear the topograpghy area
   turnRight(90); // turn 90 degrees CW and face right (need to test)
-  moveForward(150,900); //move forward to leave mission area
+  moveForward(100,900); //move forward to leave mission area
   turnLeft(90); // turn 90 degrees CCW and face right (need to test)
 
   //otv will be facing the wall and will move until its 3cm from the wall
   while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
-    analogWrite(left_motor_forward, 150);
-    analogWrite(right_motor_forward, 150);
+    analogWrite(left_motor_forward, 100);
+    analogWrite(right_motor_forward, 100);
     delay(50);
   }
-  analogWrite(left_motor_forward, 150);
-  analogWrite(right_motor_forward, 150);
+  analogWrite(left_motor_forward, 100);
+  analogWrite(right_motor_forward, 100);
 
   turnRight(90); //turn 90 degrees CW and face direction of end zone
-  moveForward(150, 1000); //move forward into end zone and under the arch, may need to adjust when testing
+  moveForward(100, 1000); //move forward into end zone and under the arch, may need to adjust when testing
 
   Serial.println("Reached end zone from topography location B");
 }
 
 //navigating to end zone from top location A
 void navigateToEndZoneWhenTopAtA(){
-  moveBackward(150, 500); //move backward to clear the topography area
+  moveBackward(100, 500); //move backward to clear the topography area
   turnRight(90); //turn 90 degrees clockwise and face right
-  moveForward(150,900); //move forward to leave landing/mission zone
+  moveForward(100,900); //move forward to leave landing/mission zone
   turnLeft(90); //turn 90 degrees CCW and face up
 
   //otv moves ahead until its 3 cm from the wall, 
   //will probably have to adjust the 3 cm threshold depending on how wide the turn is
   while(calculateDistance(dist_sensor_trigs, dist_sensor_left_echo)>0.03) {
-    analogWrite(left_motor_forward, 150);
-    analogWrite(right_motor_forward, 150);
+    analogWrite(left_motor_forward, 100);
+    analogWrite(right_motor_forward, 100);
     turnToAngle(90);
     delay(50);
   }
@@ -404,7 +404,7 @@ void navigateToEndZoneWhenTopAtA(){
 
   turnRight(90); //turn 90 degrees clockwise and face direction of end zone
 
-  moveForward(150, 1000); //move forward into end zone, may need to adjust after testing
+  moveForward(100, 1000); //move forward into end zone, may need to adjust after testing
 
   analogWrite(left_motor_forward, 0);
   analogWrite(right_motor_forward, 0);
@@ -413,13 +413,13 @@ void navigateToEndZoneWhenTopAtA(){
 }
 
 void moveForwardUntilWall() {
-  while (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.02) { // Move forward until 2 cm from the wall
+  while (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.04) { // Move forward until 4 cm from the wall
     digitalWrite(left_motor_forward, HIGH);
     digitalWrite(right_motor_forward, HIGH);
     digitalWrite(left_motor_backward, LOW);
     digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 150);
-    analogWrite(enableRightMotor, 150);
+    analogWrite(enableLeftMotor, 100);
+    analogWrite(enableRightMotor, 100);
     turnToAngle(0); // keep facing the wall
     delay(50);
   }
@@ -437,20 +437,20 @@ void moveToEnd() {
 
   if (isRightFree()) {
     while (getCorrectX() < 2.8) {
-      moveForward(150, 100);
+      moveForward(100, 100);
       turnToAngle(0);
       delay(50);
     }
     turnToAngle(90);
     while (getCorrectY() < 1.5) {
-      moveForward(150, 100);
+      moveForward(100, 100);
       turnToAngle(90);
       delay(50);
     }
     turnToAngle(0);
   } else if (isLeftFree()) {
     while (getCorrectX() < 2.8) {
-      moveForward(150, 100);
+      moveForward(100, 100);
       turnToAngle(0);
       delay(50);
     }

@@ -58,7 +58,7 @@ void loop() {
       float distanceToBottom = getCorrectY() - 0.70;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
-        moveForward(130, 100);
+        moveForward(130, 500);
         turnToAngle(-90); // keep facing the topography
         distanceToBottom = getCorrectY() - 0.70;
       }
@@ -68,7 +68,7 @@ void loop() {
       float distanceToTop = 1.30 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToTop > SAFE_STOP_DISTANCE) {
-        moveForward(130, 100);
+        moveForward(130, 500);
         turnToAngle(90); // keep facing the topography
         distanceToTop = 1.30 - getCorrectY();
       }
@@ -93,7 +93,7 @@ void loop() {
       Enes100.mission(NUM_CANDLES, globalFireCount);
     } else {
       Serial.println("Error: Could not determine topography.");
-      moveBackward(130, 1000);
+      moveBackward(130, 3000);
     }
   }
 
@@ -190,7 +190,7 @@ void moveBackward(int speed, int duration) {
 
 void turnLeft(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle;  // how much to rotate (degrees)
+  float targetRotation = angle - 2;  // how much to rotate (degrees)
   float rotated = 0;
 
   // Drive left turn motors
@@ -219,7 +219,7 @@ void turnLeft(float angle) {
 
 void turnRight(float angle) {
   float prevAngle = getAngle();
-  float targetRotation = angle;
+  float targetRotation = angle - 2;
   float rotated = 0;
 
   digitalWrite(left_motor_forward, HIGH);
@@ -271,7 +271,6 @@ float angleDifference(float from, float to) {
 
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
 float getAngle() {
-  if (!Enes100.isVisible()) return 0; // Or handle appropriately
   float theta = getCorrectTheta(); // get the latest theta value
   return theta * 180.0 / PI;
 }

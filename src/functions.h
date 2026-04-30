@@ -32,7 +32,7 @@ byte teamType = FIRE;
 const char* teamName = "Phoenix";
 // replace with Aruco Marker ID.
 int markerId = 489; // Set your marker ID here
-int roomNumber = 1120;
+int roomNumber = 1201;
 
 // put function declarations here:
 // Movement functions

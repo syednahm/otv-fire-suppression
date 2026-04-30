@@ -27,7 +27,6 @@ void setup() {
   analogWrite(enableLeftMotor, 0);
   analogWrite(enableRightMotor, 0);
 
-
   // IR sensors and fans
   pinMode(ir_sensor_left, INPUT);
   pinMode(ir_sensor_right, INPUT);

@@ -72,17 +72,16 @@ void loop() {
       }
     }
 
+    moveBackward(130, 300); // Back up a bit to be in the optimal position for topography detection
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
     while (abs(leftDistance - rightDistance) > 5.0) { // 5 cm threshold for correction
       correctAngle(leftDistance, rightDistance);
-      moveForward(130, 200);
-      moveBackward(130, 200);
+      moveForward(130, 300);
+      moveBackward(130, 300);
       leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
     }
-
-
 
     moveBackward(130, 800);
     irSensorReadings();

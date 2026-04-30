@@ -81,12 +81,15 @@ void loop() {
       moveBackward(130, 300);
       leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+      delay (1000);
     }
 
     moveBackward(130, 800);
     irSensorReadings();
+    delay (1000);
     moveForward(0.15);
     irSensorReadings();
+    delay (1000);
 
     int tries = 0;
     while(topography == -1 && tries < 10) {

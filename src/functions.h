@@ -44,6 +44,7 @@ void turnLeft(float angle);
 void turnRight(float angle);
 void turnToAngle(float angle);
 void correctAngle(float leftDistance, float rightDistance);
+void correctToAngle(float targetAngle, int maxAttempts = 5);
 float angleDifference(float from, float to);
 float normalizedAngleDiff(float from, float to);
 float calculateDistance(int trigPin, int echoPin);
@@ -55,6 +56,7 @@ void stopMotors();
 
 // IR function
 void irSensorReadings();
+int averageIRRead(int pin, int samples = 10);
 void detectTopographyLocationAorB();
 void navigateToEndZoneWhenTopAtB();
 void navigateToEndZoneWhenTopAtA();

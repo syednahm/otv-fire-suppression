@@ -53,41 +53,61 @@ void loop() {
     Enes100.println(getCorrectY());
     Enes100.println(getCorrectTheta());
     if (getCorrectY() > 1.0) {
-      //turn angle
       turnToAngle(-90);
+      correctToAngle(-90);
       float distanceToBottom = getCorrectY() - 0.70;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         moveForward(130, 500);
-        turnToAngle(-90); // keep facing the topography
         distanceToBottom = getCorrectY() - 0.70;
       }
     } else {
       // Bottom starting point
       turnToAngle(90); // turn 90 degrees CCW to face the topography
+      correctToAngle(90);
       float distanceToTop = 1.30 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         moveForward(130, 500);
-        turnToAngle(90); // keep facing the topography
         distanceToTop = 1.30 - getCorrectY();
       }
     }
 
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    while (abs(leftDistance - rightDistance) > 0.01) { // 1 cm threshold for correction
+    while (abs(leftDistance - rightDistance) > 0.05) { // 5 cm threshold for correction
       correctAngle(leftDistance, rightDistance);
+      moveForward(130, 200);
+      moveBackward(130, 200);
       leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
     }
 
+
+
+    moveBackward(130, 800);
     irSensorReadings();
     moveForward(0.15);
     irSensorReadings();
-    topography = checkTopography();
-    
+
+    int tries = 0;
+    while(topography == -1 && tries < 10) {
+      digitalWrite(left_motor_forward, HIGH);
+      digitalWrite(right_motor_forward, HIGH);
+      digitalWrite(left_motor_backward, LOW);
+      digitalWrite(right_motor_backward, LOW);
+      analogWrite(enableLeftMotor, 130);
+      analogWrite(enableRightMotor, 130);
+      topography = checkTopography();
+      Enes100.println("Current topography: " + String(topography));
+      delay(100);
+      tries++;
+    }
+
+    stopMotors();
+
     if (topography != -1) {
+      Enes100.println("Topography detected: " + String(topography));
       Enes100.mission(TOPOGRAPHY, topography);
       topographyReached = 1;
       Enes100.mission(NUM_CANDLES, globalFireCount);
@@ -177,6 +197,7 @@ void moveForward(float distance) {
   stopMotors();
 }
 
+
 void moveBackward(int speed, int duration) {
   digitalWrite(left_motor_backward, HIGH);
   digitalWrite(left_motor_forward, LOW);
@@ -188,70 +209,49 @@ void moveBackward(int speed, int duration) {
   stopMotors();
 }
 
-void turnLeft(float angle) {
-  float prevAngle = getAngle();
-  float targetRotation = angle - 2;  // how much to rotate (degrees)
-  float rotated = 0;
+void turnLeft(float targetAngle) {
+    float stopEarly = 7.5;
 
-  // Drive left turn motors
-  digitalWrite(left_motor_backward, HIGH);
-  digitalWrite(left_motor_forward, LOW);
-  digitalWrite(right_motor_forward, HIGH);
-  digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor, 130);
-  analogWrite(enableRightMotor, 130);
+    digitalWrite(left_motor_backward, HIGH);
+    digitalWrite(left_motor_forward, LOW);
+    digitalWrite(right_motor_forward, HIGH);
+    digitalWrite(right_motor_backward, LOW);
+    analogWrite(enableLeftMotor, 130);
+    analogWrite(enableRightMotor, 130);
 
-  // Loop until rotated enough
-  while (rotated < targetRotation) {
-    delay(10);
-    float currentAngle = getAngle();
-    float delta = prevAngle - currentAngle;
-    if (delta > 180) delta -= 360;
-    if (delta < -180) delta += 360;
-    rotated += abs(delta);
-    prevAngle = currentAngle;
-  }
+    while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
+        delay(10);
+    }
 
-  // Stop motors
-  stopMotors();
-
+    stopMotors();
 }
 
-void turnRight(float angle) {
-  float prevAngle = getAngle();
-  float targetRotation = angle - 2;
-  float rotated = 0;
+void turnRight(float targetAngle) {
+    float stopEarly = 7.5;
 
-  digitalWrite(left_motor_forward, HIGH);
-  digitalWrite(left_motor_backward, LOW);
-  digitalWrite(right_motor_backward, HIGH);
-  digitalWrite(right_motor_forward, LOW);
+    digitalWrite(left_motor_forward, HIGH);
+    digitalWrite(left_motor_backward, LOW);
+    digitalWrite(right_motor_backward, HIGH);
+    digitalWrite(right_motor_forward, LOW);
+    analogWrite(enableLeftMotor, 130);
+    analogWrite(enableRightMotor, 130);
 
-  analogWrite(enableLeftMotor, 130);
-  analogWrite(enableRightMotor, 130);
+    while (normalizedAngleDiff(targetAngle, getAngle()) > stopEarly) {
+        delay(10);
+    }
 
-  while (rotated < targetRotation) {
-    delay(10);
-    float currentAngle = getAngle();
-    float delta = currentAngle - prevAngle;
-    if (delta > 180) delta -= 360;
-    if (delta < -180) delta += 360;
-    rotated += abs(delta);
-    prevAngle = currentAngle;
-  }
-
-  stopMotors();
+    stopMotors();
 }
 
-void turnToAngle(float angle) {
-  float currAng = getAngle();
-  float diff = normalizedAngleDiff(currAng, angle);
-  
-  if (diff < 0) {
-    turnRight(abs(diff));
-  } else {
-    turnLeft(abs(diff));
-  }
+void turnToAngle(float targetAngle) {
+    float currAng = getAngle();
+    float diff = normalizedAngleDiff(currAng, targetAngle);
+
+    if (diff < 0) {
+        turnRight(targetAngle); // pass the absolute target directly
+    } else {
+        turnLeft(targetAngle);  // pass the absolute target directly
+    }
 }
 
 float normalizedAngleDiff(float from, float to) {
@@ -279,30 +279,42 @@ void irSensorReadings(){
   int threshold = 500; // threshold value for flame detection, need to test and adjust accordingly
 
   // Code to detect if flames are present
-  int leftFlame = analogRead(ir_sensor_left);
-  int rightFlame = analogRead(ir_sensor_right);
+  int leftFlame = averageIRRead(ir_sensor_left);
+  int rightFlame = averageIRRead(ir_sensor_right);
 
-  Serial.println("Left IR Sensor: ");
-  Serial.print(leftFlame);
-  Serial.println("Right IR Sensor: ");
-  Serial.print(rightFlame);
+  Enes100.println("Left IR Sensor: ");
+  Enes100.print(leftFlame);
+  Enes100.println("Right IR Sensor: ");
+  Enes100.print(rightFlame);
   
   if (leftFlame > threshold && rightFlame > threshold){
     digitalWrite(fans, HIGH);
-    Serial.println("Flame detected on both sides!");
+    Enes100.println("Flame detected on both sides!");
+    delay(1500);
+    digitalWrite(fans, LOW);
     globalFireCount+=2;
   }
   else if (leftFlame > threshold || rightFlame > threshold){
     digitalWrite(fans, HIGH);
-    Serial.println("Flame detected on the right or the left side!");
+    delay(1500);
+    digitalWrite(fans, LOW);
+    Enes100.println("Flame detected on the right or the left side!");
     globalFireCount++;
   }
   else{
     digitalWrite(fans, LOW);
-    Serial.println("No flames detected.");
+    Enes100.println("No flames detected.");
   }
 }
 
+int averageIRRead(int pin, int samples = 10) {
+    long sum = 0;
+    for (int i = 0; i < samples; i++) {
+        sum += analogRead(pin);
+        delay(2);
+    }
+    return sum / samples;
+}
 
 float calculateDistance(int trigPin, int echoPin) {
   int duration;
@@ -323,11 +335,28 @@ float calculateDistance(int trigPin, int echoPin) {
 void correctAngle(float leftDistance, float rightDistance) {
   if (leftDistance < rightDistance) {
     // Too close to the topography, turn slightly left
-    turnLeft(1);
+    turnLeft(2);
   } else {
     // Too close to the topography, turn slightly right
-    turnRight(1);
+    turnRight(2);
   }
+}
+
+void correctToAngle(float targetAngle, int maxAttempts = 5) {
+    for (int i = 0; i < maxAttempts; i++) {
+        delay(200); // let the OTV fully settle before checking
+        float currAngle = getAngle();
+        float diff = normalizedAngleDiff(currAngle, targetAngle);
+
+        if (abs(diff) <= 10.0) break; // within tolerance, good enough
+
+        // Make a small correction
+        if (diff > 0) {
+            turnLeft(targetAngle);
+        } else {
+            turnRight(targetAngle);
+        }
+    }
 }
 
 int checkTopography() {
@@ -335,16 +364,16 @@ int checkTopography() {
   bool rightPressed = digitalRead(right_switch) == LOW;
 
   if (midPressed && rightPressed) {
-    Serial.println("Topography: Both switches pressed");
+    Enes100.println("Topography: Both switches pressed");
     return TOP_C; // Both
   } else if (midPressed) {
-    Serial.println("Topography: Mid switch pressed");
+    Enes100.println("Topography: Mid switch pressed");
     return TOP_A; // Mid
   } else if (rightPressed) {
-    Serial.println("Topography: Right switch pressed");
+    Enes100.println("Topography: Right switch pressed");
     return TOP_B; // Right
   } else {
-    Serial.println("Topography: No switches pressed");
+    Enes100.println("Topography: No switches pressed");
     return -1; // None
   }
 }
@@ -354,10 +383,10 @@ void detectTopographyLocationAorB(){
   float y = getCorrectY();
   if (y > 1.0) { //need to adjust after testing
     topZone = 'A';
-    Serial.println("Topography in Zone A");
+    Enes100.println("Topography in Zone A");
   } else {
     topZone = 'B';
-    Serial.println("Topography in Zone B");
+    Enes100.println("Topography in Zone B");
   }
 }
 

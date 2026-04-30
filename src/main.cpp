@@ -285,14 +285,14 @@ void irSensorReadings(){
   Enes100.println("Right IR Sensor: ");
   Enes100.print(rightFlame);
   
-  if (leftFlame > threshold && rightFlame > threshold){
+  if (leftFlame < threshold && rightFlame < threshold){
     digitalWrite(fans, HIGH);
     Enes100.println("Flame detected on both sides!");
     delay(2000);
     digitalWrite(fans, LOW);
     globalFireCount+=2;
   }
-  else if (leftFlame > threshold || rightFlame > threshold){
+  else if (leftFlame < threshold || rightFlame < threshold){
     digitalWrite(fans, HIGH);
     delay(2000);
     digitalWrite(fans, LOW);

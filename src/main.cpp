@@ -75,7 +75,7 @@ void loop() {
 
     float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    while (abs(leftDistance - rightDistance) > 0.05) { // 5 cm threshold for correction
+    while (abs(leftDistance - rightDistance) > 5.0) { // 5 cm threshold for correction
       correctAngle(leftDistance, rightDistance);
       moveForward(130, 200);
       moveBackward(130, 200);
@@ -290,13 +290,13 @@ void irSensorReadings(){
   if (leftFlame > threshold && rightFlame > threshold){
     digitalWrite(fans, HIGH);
     Enes100.println("Flame detected on both sides!");
-    delay(1500);
+    delay(2000);
     digitalWrite(fans, LOW);
     globalFireCount+=2;
   }
   else if (leftFlame > threshold || rightFlame > threshold){
     digitalWrite(fans, HIGH);
-    delay(1500);
+    delay(2000);
     digitalWrite(fans, LOW);
     Enes100.println("Flame detected on the right or the left side!");
     globalFireCount++;
@@ -391,7 +391,7 @@ void detectTopographyLocationAorB(){
 }
 
 void moveForwardUntilWall() {
-  while (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.04) { // Move forward until 4 cm from the wall
+  while (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 4.0) { // Move forward until 4 cm from the wall
     digitalWrite(left_motor_forward, HIGH);
     digitalWrite(right_motor_forward, HIGH);
     digitalWrite(left_motor_backward, LOW);
@@ -443,7 +443,7 @@ bool isRightFree() {
   float distanceToTravel = getCorrectY() - 0.5;
   moveForward(distanceToTravel);
   turnLeft(90);
-  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.15) { // if more than 15 cm on the right, consider it free
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 15.0) { // if more than 15 cm on the right, consider it free
     return true;
   } else {
     return false;
@@ -455,7 +455,7 @@ bool isLeftFree() {
   float distanceToTravel = 1.5 - getCorrectY();
   moveForward(distanceToTravel);
   turnRight(90);
-  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 0.15) { // if more than 15 cm on the left, consider it free
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 15.0) { // if more than 15 cm on the left, consider it free
     return true;
   } else {
     return false;

@@ -124,14 +124,20 @@ void loop() {
 
     if (topZone == 'A') { 
       turnToAngle(-90);
+      correctToAngle(-90);
       float distanceToTravel = Enes100.getY() - 1.0;
       moveForward(distanceToTravel);
+      turnToAngle(0);
+      correctToAngle(0);
       moveToEnd();
       safeZoneReached = 1;
     } else if (topZone == 'B') {
       turnToAngle(90);
+      correctToAngle(90);
       float distanceToTravel = 1.0 - Enes100.getY();
       moveForward(distanceToTravel);
+      turnToAngle(0);
+      correctToAngle(0);
       moveToEnd();
       safeZoneReached = 1;
     }
@@ -261,14 +267,6 @@ float normalizedAngleDiff(float from, float to) {
   return diff;
 }
 
-// Helper to compute the difference between two angles (degrees, always positive)
-float angleDifference(float from, float to) {
-  float diff = to - from;
-  if (diff > 180) diff -= 360;
-  if (diff < -180) diff += 360;
-  return abs(diff);
-}
-
 // Get a -180 to 180 degree heading from Enes100 theta (-PI..PI)
 float getAngle() {
   float theta = getCorrectTheta(); // get the latest theta value
@@ -390,52 +388,44 @@ void detectTopographyLocationAorB(){
   }
 }
 
-void moveForwardUntilWall() {
-  while (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 4.0) { // Move forward until 4 cm from the wall
-    digitalWrite(left_motor_forward, HIGH);
-    digitalWrite(right_motor_forward, HIGH);
-    digitalWrite(left_motor_backward, LOW);
-    digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 130);
-    analogWrite(enableRightMotor, 130);
-    turnToAngle(0); // keep facing the wall
-    delay(50);
-  }
-  stopMotors();
-}
-
 void moveToEnd() {
-  moveForwardUntilWall();
-  bool atSecondSet = (getCorrectX() > 1.7);
-  if (isRightFree() && !atSecondSet) {
-    moveForwardUntilWall();
-  } else if (isLeftFree() && !atSecondSet) {
-    moveForwardUntilWall();
-  }
 
-  if (isRightFree()) {
-    while (getCorrectX() < 2.8) {
-      moveForward(130, 100);
-      turnToAngle(0);
+
+  while (getCorrectX() < 2.8) {
+    while (getCorrectX() < 2.8 && calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 4.0) { // Move forward until 4 cm from the wall
+      digitalWrite(left_motor_forward, HIGH);
+      digitalWrite(right_motor_forward, HIGH);
+      digitalWrite(left_motor_backward, LOW);
+      digitalWrite(right_motor_backward, LOW);
+      analogWrite(enableLeftMotor, 130);
+      analogWrite(enableRightMotor, 130);
+      correctToAngle(0); // keep facing the wall
       delay(50);
     }
+
+    stopMotors();
+    if (isRightFree()) {
+      correctToAngle(0);
+    } else if (isLeftFree()) {
+      correctToAngle(0);
+    }
+  }
+
+  if (getCorrectY() < 1.0) {
     turnToAngle(90);
+    correctToAngle(90);
     while (getCorrectY() < 1.5) {
       moveForward(130, 100);
       turnToAngle(90);
       delay(50);
     }
     turnToAngle(0);
-  } else if (isLeftFree()) {
-    while (getCorrectX() < 2.8) {
-      moveForward(130, 100);
-      turnToAngle(0);
-      delay(50);
-    }
+    correctToAngle(0);
+  } else {
+    correctToAngle(0);
   }
 
-  turnToAngle(0);
-  moveForward(1.0); // move forward into end zone, may need to adjust after testing
+  moveForward(1.0);
 }
 
 bool isRightFree() {

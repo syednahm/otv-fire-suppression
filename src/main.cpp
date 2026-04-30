@@ -305,7 +305,7 @@ void irSensorReadings(){
   }
 }
 
-int averageIRRead(int pin, int samples = 10) {
+int averageIRRead(int pin, int samples) {
     long sum = 0;
     for (int i = 0; i < samples; i++) {
         sum += analogRead(pin);
@@ -340,7 +340,7 @@ void correctAngle(float leftDistance, float rightDistance) {
   }
 }
 
-void correctToAngle(float targetAngle, int maxAttempts = 5) {
+void correctToAngle(float targetAngle, int maxAttempts) {
     for (int i = 0; i < maxAttempts; i++) {
         delay(200); // let the OTV fully settle before checking
         float currAngle = getAngle();

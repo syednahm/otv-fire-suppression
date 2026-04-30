@@ -81,10 +81,9 @@ void loop() {
       moveBackward(130, 300);
       leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-      delay (1000);
     }
 
-    moveBackward(130, 800);
+    moveBackward(130, 500);
     irSensorReadings();
     delay (1000);
     moveForward(0.15);
@@ -114,7 +113,7 @@ void loop() {
       Enes100.mission(NUM_CANDLES, globalFireCount);
     } else {
       Serial.println("Error: Could not determine topography.");
-      moveBackward(130, 3000);
+      moveBackward(130, 5000);
     }
   }
 
@@ -126,7 +125,7 @@ void loop() {
     if (topZone == 'A') { 
       turnToAngle(-90);
       correctToAngle(-90);
-      float distanceToTravel = Enes100.getY() - 1.0;
+      float distanceToTravel = getCorrectY() - 1.0;
       moveForward(distanceToTravel);
       turnToAngle(0);
       correctToAngle(0);
@@ -135,7 +134,7 @@ void loop() {
     } else if (topZone == 'B') {
       turnToAngle(90);
       correctToAngle(90);
-      float distanceToTravel = 1.0 - Enes100.getY();
+      float distanceToTravel = 1.0 - getCorrectY();
       moveForward(distanceToTravel);
       turnToAngle(0);
       correctToAngle(0);
@@ -217,7 +216,7 @@ void moveBackward(int speed, int duration) {
 }
 
 void turnLeft(float targetAngle) {
-    float stopEarly = 7.5;
+    float stopEarly = 4.0;
 
     digitalWrite(left_motor_backward, HIGH);
     digitalWrite(left_motor_forward, LOW);
@@ -275,7 +274,7 @@ float getAngle() {
 }
 
 void irSensorReadings(){
-  int threshold = 500; // threshold value for flame detection, need to test and adjust accordingly
+  int threshold = 900; // threshold value for flame detection, need to test and adjust accordingly
 
   // Code to detect if flames are present
   int leftFlame = averageIRRead(ir_sensor_left);
@@ -288,16 +287,21 @@ void irSensorReadings(){
   
   if (leftFlame < threshold && rightFlame < threshold){
     digitalWrite(fans, HIGH);
+    turnRight(7);
+    turnLeft(7);
     Enes100.println("Flame detected on both sides!");
-    delay(2000);
+    delay(3000);
     digitalWrite(fans, LOW);
     globalFireCount+=2;
   }
   else if (leftFlame < threshold || rightFlame < threshold){
     digitalWrite(fans, HIGH);
-    delay(2000);
-    digitalWrite(fans, LOW);
+    turnRight(7);
+    turnLeft(7);
     Enes100.println("Flame detected on the right or the left side!");
+    delay(3000);
+    digitalWrite(fans, LOW);
+    
     globalFireCount++;
   }
   else{
@@ -310,7 +314,7 @@ int averageIRRead(int pin, int samples) {
     long sum = 0;
     for (int i = 0; i < samples; i++) {
         sum += analogRead(pin);
-        delay(2);
+        delay(20);
     }
     return sum / samples;
 }
@@ -334,10 +338,10 @@ float calculateDistance(int trigPin, int echoPin) {
 void correctAngle(float leftDistance, float rightDistance) {
   if (leftDistance < rightDistance) {
     // Too close to the topography, turn slightly left
-    turnLeft(2);
+    turnLeft(4);
   } else {
     // Too close to the topography, turn slightly right
-    turnRight(2);
+    turnRight(4);
   }
 }
 

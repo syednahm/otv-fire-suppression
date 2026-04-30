@@ -58,8 +58,6 @@ void stopMotors();
 void irSensorReadings();
 int averageIRRead(int pin, int samples = 10);
 void detectTopographyLocationAorB();
-void navigateToEndZoneWhenTopAtB();
-void navigateToEndZoneWhenTopAtA();
 int checkTopography();
 
 // Safe zone navigation functions

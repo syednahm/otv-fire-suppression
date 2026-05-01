@@ -77,18 +77,18 @@ void loop() {
     float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
     while (abs(leftDistance - rightDistance) > 5.0) { // 5 cm threshold for correction
       correctAngle(leftDistance, rightDistance);
-      moveForward(130, 300);
-      moveBackward(130, 300);
+      moveForward(150, 300);
+      moveBackward(130, 150);
       leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
       rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
     }
 
     moveBackward(130, 500);
     irSensorReadings();
-    delay (1000);
+    delay (10000);
     moveForward(0.15);
     irSensorReadings();
-    delay (1000);
+    delay (10000);
 
     int tries = 0;
     while(topography == -1 && tries < 10) {
@@ -287,22 +287,25 @@ void irSensorReadings(){
   
   if (leftFlame < threshold && rightFlame < threshold){
     digitalWrite(fans, HIGH);
-    turnRight(7);
-    turnLeft(7);
+    //turnRight(7);
+    //turnLeft(7);
     Enes100.println("Flame detected on both sides!");
     delay(3000);
     digitalWrite(fans, LOW);
     globalFireCount+=2;
+    globalFireCount--;
+
   }
   else if (leftFlame < threshold || rightFlame < threshold){
     digitalWrite(fans, HIGH);
-    turnRight(7);
-    turnLeft(7);
+    //turnRight(7);
+    //turnLeft(7);
     Enes100.println("Flame detected on the right or the left side!");
     delay(3000);
     digitalWrite(fans, LOW);
     
     globalFireCount++;
+    globalFireCount--;
   }
   else{
     digitalWrite(fans, LOW);

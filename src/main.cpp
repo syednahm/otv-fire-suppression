@@ -72,23 +72,23 @@ void loop() {
       }
     }
 
-    moveBackward(130, 300); // Back up a bit to be in the optimal position for topography detection
-    float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-    float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    while (abs(leftDistance - rightDistance) > 5.0) { // 5 cm threshold for correction
-      correctAngle(leftDistance, rightDistance);
-      moveForward(150, 300);
-      moveBackward(130, 150);
-      leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-      rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    }
+    // moveBackward(130, 300); // Back up a bit to be in the optimal position for topography detection
+    // float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+    // float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+    // while (abs(leftDistance - rightDistance) > 5.0) { // 5 cm threshold for correction
+    //   correctAngle(leftDistance, rightDistance);
+    //   moveForward(150, 300);
+    //   moveBackward(130, 150);
+    //   leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
+    //   rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
+    // }
 
     moveBackward(130, 500);
     irSensorReadings();
-    delay (10000);
+    delay (1000);
     moveForward(0.15);
     irSensorReadings();
-    delay (10000);
+    delay (1000);
 
     int tries = 0;
     while(topography == -1 && tries < 10) {
@@ -218,35 +218,31 @@ void moveBackward(int speed, int duration) {
 void turnLeft(float targetAngle) {
     float stopEarly = 4.0;
 
-    digitalWrite(left_motor_backward, HIGH);
-    digitalWrite(left_motor_forward, LOW);
-    digitalWrite(right_motor_forward, HIGH);
-    digitalWrite(right_motor_backward, LOW);
-    analogWrite(enableLeftMotor, 130);
-    analogWrite(enableRightMotor, 130);
-
     while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
-        delay(10);
+        digitalWrite(left_motor_backward, HIGH);
+        digitalWrite(left_motor_forward, LOW);
+        digitalWrite(right_motor_forward, HIGH);
+        digitalWrite(right_motor_backward, LOW);
+        analogWrite(enableLeftMotor, 130);
+        analogWrite(enableRightMotor, 130);
+        delay(100);
+        stopMotors();
     }
-
-    stopMotors();
 }
 
 void turnRight(float targetAngle) {
-    float stopEarly = 7.5;
+    float stopEarly = 4.0;
 
-    digitalWrite(left_motor_forward, HIGH);
-    digitalWrite(left_motor_backward, LOW);
-    digitalWrite(right_motor_backward, HIGH);
-    digitalWrite(right_motor_forward, LOW);
-    analogWrite(enableLeftMotor, 130);
-    analogWrite(enableRightMotor, 130);
-
-    while (normalizedAngleDiff(targetAngle, getAngle()) > stopEarly) {
-        delay(10);
+    while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
+      digitalWrite(left_motor_forward, HIGH);
+      digitalWrite(left_motor_backward, LOW);
+      digitalWrite(right_motor_backward, HIGH);
+      digitalWrite(right_motor_forward, LOW);
+      analogWrite(enableLeftMotor, 130);
+      analogWrite(enableRightMotor, 130);
+      delay(100);
+      stopMotors();
     }
-
-    stopMotors();
 }
 
 void turnToAngle(float targetAngle) {
@@ -254,9 +250,9 @@ void turnToAngle(float targetAngle) {
     float diff = normalizedAngleDiff(currAng, targetAngle);
 
     if (diff < 0) {
-        turnRight(targetAngle); // pass the absolute target directly
+        turnRight(abs(diff)); // pass the absolute target directly
     } else {
-        turnLeft(targetAngle);  // pass the absolute target directly
+        turnLeft(abs(diff));  // pass the absolute target directly
     }
 }
 
@@ -274,7 +270,7 @@ float getAngle() {
 }
 
 void irSensorReadings(){
-  int threshold = 900; // threshold value for flame detection, need to test and adjust accordingly
+  int threshold = 600; // threshold value for flame detection, need to test and adjust accordingly
 
   // Code to detect if flames are present
   int leftFlame = averageIRRead(ir_sensor_left);
@@ -293,8 +289,6 @@ void irSensorReadings(){
     delay(3000);
     digitalWrite(fans, LOW);
     globalFireCount+=2;
-    globalFireCount--;
-
   }
   else if (leftFlame < threshold || rightFlame < threshold){
     digitalWrite(fans, HIGH);
@@ -305,7 +299,6 @@ void irSensorReadings(){
     digitalWrite(fans, LOW);
     
     globalFireCount++;
-    globalFireCount--;
   }
   else{
     digitalWrite(fans, LOW);
@@ -354,13 +347,13 @@ void correctToAngle(float targetAngle, int maxAttempts) {
         float currAngle = getAngle();
         float diff = normalizedAngleDiff(currAngle, targetAngle);
 
-        if (abs(diff) <= 10.0) break; // within tolerance, good enough
+        if (abs(diff) <= 8.0) break; // within tolerance, good enough
 
         // Make a small correction
         if (diff > 0) {
-            turnLeft(targetAngle);
+            turnLeft(2);
         } else {
-            turnRight(targetAngle);
+            turnRight(2);
         }
     }
 }
@@ -397,8 +390,6 @@ void detectTopographyLocationAorB(){
 }
 
 void moveToEnd() {
-
-
   while (getCorrectX() < 2.8) {
     while (getCorrectX() < 2.8 && calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 4.0) { // Move forward until 4 cm from the wall
       digitalWrite(left_motor_forward, HIGH);

@@ -120,8 +120,8 @@ void loop() {
   // First checks to see if old task is completed and also if new task is uncompleted.
   if (topographyReached == 1 && safeZoneReached == 0) {
     detectTopographyLocationAorB();
-
-
+    moveBackward(130, 300);
+    delay(500);
     if (topZone == 'A') { 
       turnToAngle(-90);
       correctToAngle(-90);
@@ -216,7 +216,7 @@ void moveBackward(int speed, int duration) {
 }
 
 void turnLeft(float targetAngle) {
-    float stopEarly = 4.0;
+    float stopEarly = 2.0;
 
     while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
         digitalWrite(left_motor_backward, HIGH);
@@ -225,13 +225,13 @@ void turnLeft(float targetAngle) {
         digitalWrite(right_motor_backward, LOW);
         analogWrite(enableLeftMotor, 130);
         analogWrite(enableRightMotor, 130);
-        delay(100);
+        delay(50);
         stopMotors();
     }
 }
 
 void turnRight(float targetAngle) {
-    float stopEarly = 4.0;
+    float stopEarly = 2.0;
 
     while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
       digitalWrite(left_motor_forward, HIGH);
@@ -240,7 +240,7 @@ void turnRight(float targetAngle) {
       digitalWrite(right_motor_forward, LOW);
       analogWrite(enableLeftMotor, 130);
       analogWrite(enableRightMotor, 130);
-      delay(100);
+      delay(50);
       stopMotors();
     }
 }
@@ -347,13 +347,13 @@ void correctToAngle(float targetAngle, int maxAttempts) {
         float currAngle = getAngle();
         float diff = normalizedAngleDiff(currAngle, targetAngle);
 
-        if (abs(diff) <= 8.0) break; // within tolerance, good enough
+        if (abs(diff) <= 1.0) break; // within tolerance, good enough
 
         // Make a small correction
         if (diff > 0) {
-            turnLeft(2);
+            turnLeft(abs(diff));
         } else {
-            turnRight(2);
+            turnRight(abs(diff));
         }
     }
 }

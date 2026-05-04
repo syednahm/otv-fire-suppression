@@ -70,7 +70,7 @@ void loop() {
       }
     }
 
-    moveBackward(130, 500);
+    moveBackward(130, 600);
     irSensorReadings();
     delay (1000);
     moveForward(0.15);
@@ -360,7 +360,7 @@ void correctToAngle(float targetAngle, int maxAttempts) {
         float currAngle = getAngle();
         float diff = normalizedAngleDiff(currAngle, targetAngle);
 
-        if (abs(diff) <= 1.0) break; // within tolerance, good enough
+        if (abs(diff) <= 2.0) break; // within tolerance, good enough
 
         // Make a small correction
         if (diff > 0) {
@@ -404,17 +404,18 @@ void detectTopographyLocationAorB(){
 
 void moveToEnd() {
   while (getCorrectX() < 2.8) {
-    while (getCorrectX() < 2.8 && calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 4.0) { // Move forward until 4 cm from the wall
+    while (getCorrectX() < 2.8 && calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // Move forward until 21 cm from the wall
       digitalWrite(left_motor_forward, HIGH);
       digitalWrite(right_motor_forward, HIGH);
       digitalWrite(left_motor_backward, LOW);
       digitalWrite(right_motor_backward, LOW);
       analogWrite(enableLeftMotor, 130);
       analogWrite(enableRightMotor, 130);
-      delay(150);
+      delay(300);
+      stopMotors();
+      delay(500);
     }
 
-    stopMotors();
     if (isRightFree()) {
       correctToAngle(0);
     } else if (isLeftFree()) {

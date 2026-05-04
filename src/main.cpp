@@ -53,7 +53,6 @@ void loop() {
     Enes100.println(getCorrectTheta());
     if (getCorrectY() > 1.0) {
       turnToAngle(-90);
-      correctToAngle(-90);
       float distanceToBottom = getCorrectY() - 0.70;
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
@@ -63,7 +62,6 @@ void loop() {
     } else {
       // Bottom starting point
       turnToAngle(90); // turn 90 degrees CCW to face the topography
-      correctToAngle(90);
       float distanceToTop = 1.30 - getCorrectY();
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToTop > SAFE_STOP_DISTANCE) {
@@ -81,7 +79,7 @@ void loop() {
 
     int tries = 0;
     while(topography == -1 && tries < 10) {
-      if (tries != 0 &&tries % 2 == 0){
+      if (tries != 0 && tries % 2 == 0){
         digitalWrite(left_motor_forward, HIGH);
         digitalWrite(right_motor_forward, LOW);
         digitalWrite(left_motor_backward, LOW);
@@ -132,7 +130,7 @@ void loop() {
     if (topZone == 'A') { 
       turnToAngle(-90);
       correctToAngle(-90);
-      float distanceToTravel = getCorrectY() - 1.0;
+      float distanceToTravel = getCorrectY() - 1.1;
       moveForward(distanceToTravel);
       turnToAngle(0);
       correctToAngle(0);
@@ -141,7 +139,7 @@ void loop() {
     } else if (topZone == 'B') {
       turnToAngle(90);
       correctToAngle(90);
-      float distanceToTravel = 1.0 - getCorrectY();
+      float distanceToTravel = 0.9 - getCorrectY();
       moveForward(distanceToTravel);
       turnToAngle(0);
       correctToAngle(0);
@@ -222,32 +220,42 @@ void moveBackward(int speed, int duration) {
   stopMotors();
 }
 
-void turnLeft(float targetAngle) {
-    float stopEarly = 2.0;
-
-    while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
-        digitalWrite(left_motor_backward, HIGH);
+void turnLeft(float angle) {
+    float stopEarly = 0.5;
+    float initialAngle = getAngle();
+    float distance = 0.0;
+    while (distance < angle - stopEarly) {
         digitalWrite(left_motor_forward, LOW);
-        digitalWrite(right_motor_forward, HIGH);
+        digitalWrite(left_motor_backward, HIGH);
         digitalWrite(right_motor_backward, LOW);
+        digitalWrite(right_motor_forward, HIGH);
         analogWrite(enableLeftMotor, 130);
         analogWrite(enableRightMotor, 130);
-        delay(50);
+        delay(100);
+        float currAngle = getAngle();
+        distance += normalizedAngleDiff(currAngle, initialAngle);
+        initialAngle = currAngle;
         stopMotors();
     }
 }
 
-void turnRight(float targetAngle) {
-    float stopEarly = 2.0;
+void turnRight(float angle) {
+    float stopEarly = 0.5;
 
-    while (normalizedAngleDiff(getAngle(), targetAngle) > stopEarly) {
+    float initialAngle = getAngle();
+    float distance = 0.0;
+
+    while (distance < angle - stopEarly) {
       digitalWrite(left_motor_forward, HIGH);
       digitalWrite(left_motor_backward, LOW);
       digitalWrite(right_motor_backward, HIGH);
       digitalWrite(right_motor_forward, LOW);
       analogWrite(enableLeftMotor, 130);
       analogWrite(enableRightMotor, 130);
-      delay(50);
+      delay(100);
+      float currAngle = getAngle();
+      distance += normalizedAngleDiff(initialAngle, currAngle);
+      initialAngle = currAngle;
       stopMotors();
     }
 }

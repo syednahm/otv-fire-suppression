@@ -69,8 +69,9 @@ void loop() {
         distanceToTop = 1.30 - getCorrectY();
       }
     }
-
-    moveBackward(130, 600);
+    delay(500);
+    moveBackward(130, 800);
+    delay(500);
     irSensorReadings();
     delay (1000);
     moveForward(0.15);
@@ -440,10 +441,10 @@ void moveToEnd() {
 
 bool isRightFree() {
   turnRight(90);
-  float distanceToTravel = getCorrectY() - 0.5;
+  float distanceToTravel = getCorrectY() - 0.3;
   moveForward(distanceToTravel);
   turnLeft(90);
-  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 15.0) { // if more than 15 cm on the right, consider it free
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the right, consider it free
     return true;
   } else {
     return false;
@@ -452,10 +453,10 @@ bool isRightFree() {
 
 bool isLeftFree() {
   turnLeft(90);
-  float distanceToTravel = 1.5 - getCorrectY();
+  float distanceToTravel = 1.7 - getCorrectY();
   moveForward(distanceToTravel);
   turnRight(90);
-  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 15.0) { // if more than 15 cm on the left, consider it free
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the left, consider it free
     return true;
   } else {
     return false;
@@ -467,7 +468,7 @@ float getCorrectX() {
   float x = Enes100.getX();
   while (x == -1) {
     x = Enes100.getX();
-    delay(100);
+    delay(50);
   }
   return x;
 }
@@ -476,7 +477,7 @@ float getCorrectY() {
   float y = Enes100.getY();
   while (y == -1) {
     y = Enes100.getY();
-    delay(100);
+    delay(50);
   }
   return y;
 }
@@ -485,7 +486,7 @@ float getCorrectTheta() {
   float theta = Enes100.getTheta();
   while (theta == -1) {
     theta = Enes100.getTheta();
-    delay(100);
+    delay(50);
   }
   return theta;
 }

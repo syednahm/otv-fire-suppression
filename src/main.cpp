@@ -72,17 +72,6 @@ void loop() {
       }
     }
 
-    // moveBackward(130, 300); // Back up a bit to be in the optimal position for topography detection
-    // float leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-    // float rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    // while (abs(leftDistance - rightDistance) > 5.0) { // 5 cm threshold for correction
-    //   correctAngle(leftDistance, rightDistance);
-    //   moveForward(150, 300);
-    //   moveBackward(130, 150);
-    //   leftDistance = calculateDistance(dist_sensor_trigs, dist_sensor_left_echo);
-    //   rightDistance = calculateDistance(dist_sensor_trigs, dist_sensor_right_echo);
-    // }
-
     moveBackward(130, 500);
     irSensorReadings();
     delay (1000);
@@ -92,16 +81,34 @@ void loop() {
 
     int tries = 0;
     while(topography == -1 && tries < 10) {
+      if (tries != 0 &&tries % 2 == 0){
+        digitalWrite(left_motor_forward, HIGH);
+        digitalWrite(right_motor_forward, LOW);
+        digitalWrite(left_motor_backward, LOW);
+        digitalWrite(right_motor_backward, HIGH);
+        delay(50);
+        stopMotors();
+      } else if (tries != 0){
+        digitalWrite(left_motor_forward, LOW);
+        digitalWrite(right_motor_forward, HIGH);
+        digitalWrite(left_motor_backward, HIGH);
+        digitalWrite(right_motor_backward, LOW);
+        delay(50);
+        stopMotors();
+      }
       digitalWrite(left_motor_forward, HIGH);
       digitalWrite(right_motor_forward, HIGH);
       digitalWrite(left_motor_backward, LOW);
       digitalWrite(right_motor_backward, LOW);
       analogWrite(enableLeftMotor, 130);
       analogWrite(enableRightMotor, 130);
+      delay(300);
       topography = checkTopography();
       Enes100.println("Current topography: " + String(topography));
       delay(100);
       tries++;
+      stopMotors();
+      moveBackward(130, 250);
     }
 
     stopMotors();
@@ -329,16 +336,6 @@ float calculateDistance(int trigPin, int echoPin) {
   distance = duration * 0.0343 / 2.0; // Convert duration to distance in cm
   
   return distance;
-}
-
-void correctAngle(float leftDistance, float rightDistance) {
-  if (leftDistance < rightDistance) {
-    // Too close to the topography, turn slightly left
-    turnLeft(4);
-  } else {
-    // Too close to the topography, turn slightly right
-    turnRight(4);
-  }
 }
 
 void correctToAngle(float targetAngle, int maxAttempts) {

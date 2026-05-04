@@ -300,12 +300,12 @@ void irSensorReadings(){
   int leftFlame = averageIRRead(ir_sensor_left);
   int rightFlame = averageIRRead(ir_sensor_right);
 
-  Enes100.println("Left IR Sensor: ");
-  Enes100.print(leftFlame);
-  Enes100.println("Right IR Sensor: ");
-  Enes100.print(rightFlame);
+  Enes100.print("Left IR Sensor: ");
+  Enes100.println(leftFlame);
+  Enes100.print("Right IR Sensor: ");
+  Enes100.println(rightFlame);
   
-  if (leftFlame > threshold && rightFlame > threshold){
+  if (leftFlame > threshold && rightFlame > threshold) {
     digitalWrite(fans, HIGH);
     //turnRight(7);
     //turnLeft(7);
@@ -313,18 +313,16 @@ void irSensorReadings(){
     delay(3000);
     digitalWrite(fans, LOW);
     globalFireCount+=2;
-  }
-  else if (leftFlame > threshold || rightFlame > threshold){
+
+  } else if (leftFlame > threshold || rightFlame > threshold) {
     digitalWrite(fans, HIGH);
     //turnRight(7);
     //turnLeft(7);
     Enes100.println("Flame detected on the right or the left side!");
     delay(3000);
     digitalWrite(fans, LOW);
-    
     globalFireCount++;
-  }
-  else{
+  } else {
     digitalWrite(fans, LOW);
     Enes100.println("No flames detected.");
   }
@@ -334,7 +332,7 @@ int averageIRRead(int pin, int samples) {
     long sum = 0;
     for (int i = 0; i < samples; i++) {
         sum += analogRead(pin);
-        delay(20);
+        delay(40);
     }
     return sum / samples;
 }
@@ -357,18 +355,18 @@ float calculateDistance(int trigPin, int echoPin) {
 
 void correctToAngle(float targetAngle, int maxAttempts) {
     for (int i = 0; i < maxAttempts; i++) {
-        delay(200); // let the OTV fully settle before checking
-        float currAngle = getAngle();
-        float diff = normalizedAngleDiff(currAngle, targetAngle);
+      delay(200); // let the OTV fully settle before checking
+      float currAngle = getAngle();
+      float diff = normalizedAngleDiff(currAngle, targetAngle);
 
-        if (abs(diff) <= 2.0) break; // within tolerance, good enough
+      if (abs(diff) <= 2.0) break; // within tolerance, good enough
 
-        // Make a small correction
-        if (diff > 0) {
-            turnLeft(abs(diff));
-        } else {
-            turnRight(abs(diff));
-        }
+      // Make a small correction
+      if (diff > 0) {
+          turnLeft(abs(diff));
+      } else {
+          turnRight(abs(diff));
+      }
     }
 }
 
@@ -417,6 +415,7 @@ void moveToEnd() {
       delay(500);
     }
 
+    turnToAngle(-90);
     if (isRightFree()) {
       correctToAngle(0);
     } else if (isLeftFree()) {
@@ -440,10 +439,10 @@ void moveToEnd() {
 }
 
 bool isRightFree() {
-  turnRight(90);
+  turnToAngle(-90);
   float distanceToTravel = getCorrectY() - 0.3;
   moveForward(distanceToTravel);
-  turnLeft(90);
+  turnToAngle(0);
   if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the right, consider it free
     return true;
   } else {
@@ -452,10 +451,10 @@ bool isRightFree() {
 }
 
 bool isLeftFree() {
-  turnLeft(90);
+  turnToAngle(90);
   float distanceToTravel = 1.7 - getCorrectY();
   moveForward(distanceToTravel);
-  turnRight(90);
+  turnToAngle(0);
   if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the left, consider it free
     return true;
   } else {

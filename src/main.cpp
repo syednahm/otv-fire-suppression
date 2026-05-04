@@ -416,7 +416,7 @@ void moveToEnd() {
     }
 
     turnToAngle(-90);
-    if (isRightFree()) {
+    if ( !(getCorrectY() < 0.8) && isRightFree()) {
       correctToAngle(0);
     } else if (isLeftFree()) {
       correctToAngle(0);
@@ -452,7 +452,7 @@ bool isRightFree() {
 
 bool isLeftFree() {
   turnToAngle(90);
-  float distanceToTravel = 1.7 - getCorrectY();
+  float distanceToTravel = 1.65 - getCorrectY();
   moveForward(distanceToTravel);
   turnToAngle(0);
   if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the left, consider it free

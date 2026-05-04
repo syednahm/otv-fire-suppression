@@ -294,7 +294,7 @@ float getAngle() {
 }
 
 void irSensorReadings(){
-  int threshold = 600; // threshold value for flame detection, need to test and adjust accordingly
+  int threshold = 700; // threshold value for flame detection, need to test and adjust accordingly
 
   // Code to detect if flames are present
   int leftFlame = averageIRRead(ir_sensor_left);
@@ -305,7 +305,7 @@ void irSensorReadings(){
   Enes100.print("Right IR Sensor: ");
   Enes100.println(rightFlame);
   
-  if (leftFlame > threshold && rightFlame > threshold) {
+  if (leftFlame < threshold && rightFlame < threshold) {
     digitalWrite(fans, HIGH);
     //turnRight(7);
     //turnLeft(7);
@@ -314,7 +314,7 @@ void irSensorReadings(){
     digitalWrite(fans, LOW);
     globalFireCount+=2;
 
-  } else if (leftFlame > threshold || rightFlame > threshold) {
+  } else if (leftFlame < threshold || rightFlame < threshold) {
     digitalWrite(fans, HIGH);
     //turnRight(7);
     //turnLeft(7);
@@ -415,8 +415,7 @@ void moveToEnd() {
       delay(500);
     }
 
-    turnToAngle(-90);
-    if ( !(getCorrectY() < 0.8) && isRightFree()) {
+    if (!(getCorrectY() < 0.8) && isRightFree()) {
       correctToAngle(0);
     } else if (isLeftFree()) {
       correctToAngle(0);

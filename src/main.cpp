@@ -74,6 +74,8 @@ void loop() {
     irSensorReadings();
     delay (1000);
     moveForward(0.15);
+    delay(1000);
+    Enes100.println("Now checking second set of flames.");
     irSensorReadings();
     delay (1000);
 
@@ -84,14 +86,14 @@ void loop() {
         digitalWrite(right_motor_forward, LOW);
         digitalWrite(left_motor_backward, LOW);
         digitalWrite(right_motor_backward, HIGH);
-        delay(50);
+        delay(100);
         stopMotors();
       } else if (tries != 0){
         digitalWrite(left_motor_forward, LOW);
         digitalWrite(right_motor_forward, HIGH);
         digitalWrite(left_motor_backward, HIGH);
         digitalWrite(right_motor_backward, LOW);
-        delay(50);
+        delay(100);
         stopMotors();
       }
       digitalWrite(left_motor_forward, HIGH);
@@ -180,28 +182,32 @@ void moveForward(float distance) {
   float targetX = startX + distance * cos(angle);
   float targetY = startY + distance * sin(angle);
 
-  // Turn on both motors
-  digitalWrite(left_motor_forward, HIGH);
-  digitalWrite(left_motor_backward, LOW);
-  digitalWrite(right_motor_forward, HIGH);
-  digitalWrite(right_motor_backward, LOW);
-  analogWrite(enableLeftMotor,130);
-  analogWrite(enableRightMotor, 130);
-
+  
+  int tries = 0;
   // Keep moving until we reach the target position
   while (true) {
     float currentX = getCorrectX();
     float currentY = getCorrectY();
+    // Turn on both motors
+    digitalWrite(left_motor_forward, HIGH);
+    digitalWrite(left_motor_backward, LOW);
+    digitalWrite(right_motor_forward, HIGH);
+    digitalWrite(right_motor_backward, LOW);
+    analogWrite(enableLeftMotor,130);
+    analogWrite(enableRightMotor, 130);
 
     // Calculate distance to target
     float distanceToTarget = sqrt(pow(targetX - currentX, 2) + pow(targetY - currentY, 2));
 
     // Stop when close enough (within 3cm tolerance)
-    if (distanceToTarget < 0.03) {  // 0.03 meters = 3 cm
+    if (distanceToTarget < 0.03 || (distanceToTarget < 0.5 && tries == 10)) {  // 0.03 meters = 3 cm
       break;
     }
 
-    delay(50);  // Small delay between position checks
+    delay(100);  // Small delay between position checks
+    stopMotors();
+    delay(100);
+    tries++;
   }
 
   // Stop both motors
@@ -221,26 +227,27 @@ void moveBackward(int speed, int duration) {
 }
 
 void turnLeft(float angle) {
-    float stopEarly = 0.5;
+    float stopEarly = 1.0;
     float initialAngle = getAngle();
     float distance = 0.0;
     while (distance < angle - stopEarly) {
-        digitalWrite(left_motor_forward, LOW);
-        digitalWrite(left_motor_backward, HIGH);
-        digitalWrite(right_motor_backward, LOW);
-        digitalWrite(right_motor_forward, HIGH);
-        analogWrite(enableLeftMotor, 130);
-        analogWrite(enableRightMotor, 130);
-        delay(100);
-        float currAngle = getAngle();
-        distance += normalizedAngleDiff(currAngle, initialAngle);
-        initialAngle = currAngle;
-        stopMotors();
+      digitalWrite(left_motor_forward, LOW);
+      digitalWrite(left_motor_backward, HIGH);
+      digitalWrite(right_motor_backward, LOW);
+      digitalWrite(right_motor_forward, HIGH);
+      analogWrite(enableLeftMotor, 130);
+      analogWrite(enableRightMotor, 130);
+      delay(50);
+      float currAngle = getAngle();
+      distance += abs(normalizedAngleDiff(currAngle, initialAngle));
+      initialAngle = currAngle;
+      stopMotors();
+      delay(100);
     }
 }
 
 void turnRight(float angle) {
-    float stopEarly = 0.5;
+    float stopEarly = 1.0;
 
     float initialAngle = getAngle();
     float distance = 0.0;
@@ -252,11 +259,12 @@ void turnRight(float angle) {
       digitalWrite(right_motor_forward, LOW);
       analogWrite(enableLeftMotor, 130);
       analogWrite(enableRightMotor, 130);
-      delay(100);
+      delay(50);
       float currAngle = getAngle();
-      distance += normalizedAngleDiff(initialAngle, currAngle);
+      distance += abs(normalizedAngleDiff(initialAngle, currAngle));
       initialAngle = currAngle;
       stopMotors();
+      delay(100);
     }
 }
 
@@ -296,7 +304,7 @@ void irSensorReadings(){
   Enes100.println("Right IR Sensor: ");
   Enes100.print(rightFlame);
   
-  if (leftFlame < threshold && rightFlame < threshold){
+  if (leftFlame > threshold && rightFlame > threshold){
     digitalWrite(fans, HIGH);
     //turnRight(7);
     //turnLeft(7);
@@ -305,7 +313,7 @@ void irSensorReadings(){
     digitalWrite(fans, LOW);
     globalFireCount+=2;
   }
-  else if (leftFlame < threshold || rightFlame < threshold){
+  else if (leftFlame > threshold || rightFlame > threshold){
     digitalWrite(fans, HIGH);
     //turnRight(7);
     //turnLeft(7);
@@ -403,8 +411,7 @@ void moveToEnd() {
       digitalWrite(right_motor_backward, LOW);
       analogWrite(enableLeftMotor, 130);
       analogWrite(enableRightMotor, 130);
-      correctToAngle(0); // keep facing the wall
-      delay(50);
+      delay(150);
     }
 
     stopMotors();
@@ -420,11 +427,9 @@ void moveToEnd() {
     correctToAngle(90);
     while (getCorrectY() < 1.5) {
       moveForward(130, 100);
-      turnToAngle(90);
-      delay(50);
+      delay(150);
     }
     turnToAngle(0);
-    correctToAngle(0);
   } else {
     correctToAngle(0);
   }

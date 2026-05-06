@@ -49,6 +49,8 @@ void loop() {
   if (topographyReached == 0) {
     globalFireCount = 1;
     // Top starting point
+
+    int correctionTries = 0;
     Enes100.println(getCorrectY());
     Enes100.println(getCorrectTheta());
     if (getCorrectY() > 1.0) {
@@ -57,7 +59,11 @@ void loop() {
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the top
       while (distanceToBottom > SAFE_STOP_DISTANCE) {
         moveForward(130, 500);
+        if (correctionTries % 4 == 0) {
+          correctToAngle(-90);
+        }
         distanceToBottom = getCorrectY() - 0.70;
+        correctionTries++;
       }
     } else {
       // Bottom starting point
@@ -66,7 +72,11 @@ void loop() {
       const float SAFE_STOP_DISTANCE = 0.15; // stop 15cm before the bottom
       while (distanceToTop > SAFE_STOP_DISTANCE) {
         moveForward(130, 500);
+        if (correctionTries % 4 == 0) {
+          correctToAngle(90);
+        }
         distanceToTop = 1.30 - getCorrectY();
+        correctionTries++;
       }
     }
     delay(500);
@@ -358,7 +368,7 @@ void correctToAngle(float targetAngle, int maxAttempts) {
       float currAngle = getAngle();
       float diff = normalizedAngleDiff(currAngle, targetAngle);
 
-      if (abs(diff) <= 2.0) break; // within tolerance, good enough
+      if (abs(diff) <= 1.5) break; // within tolerance, good enough
 
       // Make a small correction
       if (diff > 0) {

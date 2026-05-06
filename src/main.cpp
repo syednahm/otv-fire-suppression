@@ -418,8 +418,8 @@ void moveToEnd() {
       break; // Reached the end
     }
 
-
-    if ((getCorrectY() > 1.2 || getCorrectY() < 0.8) && checkMiddle()) {
+    float currY = getCorrectY();
+    if ((currY > 1.2 || currY < 0.8) && checkMiddle()) {
       correctToAngle(0);
     } else if (!(getCorrectY() < 0.8) && isRightFree()) {
       correctToAngle(0);

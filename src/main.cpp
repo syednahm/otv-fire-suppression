@@ -173,7 +173,6 @@ void moveForward(int speed, int duration) {
 }
 
 // Move forward using distance (meters) instead of time and speed.
-// MAY need to change this to rely on timing and speed.
 void moveForward(float distance) {
   float startX = getCorrectX();
   float startY = getCorrectY();
@@ -415,14 +414,23 @@ void moveToEnd() {
       delay(500);
     }
 
+    if (getCorrectX() >= 2.8) {
+      break; // Reached the end
+    }
+
     if (!(getCorrectY() < 0.8) && isRightFree()) {
       correctToAngle(0);
-    } else if (isLeftFree()) {
+    } else if (!(getCorrectY() > 0.8) && isLeftFree()) {
       correctToAngle(0);
+    } else {
+      turnToAngle(90);
+      float distToTravel = 1.1 - getCorrectY();
+      moveForward(distToTravel);
+      turnToAngle(0);
     }
   }
 
-  if (getCorrectY() < 1.0) {
+  if (getCorrectY() < 1.3) {
     turnToAngle(90);
     correctToAngle(90);
     while (getCorrectY() < 1.5) {
@@ -439,7 +447,7 @@ void moveToEnd() {
 
 bool isRightFree() {
   turnToAngle(-90);
-  float distanceToTravel = getCorrectY() - 0.3;
+  float distanceToTravel = getCorrectY() - 0.35;
   moveForward(distanceToTravel);
   turnToAngle(0);
   if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the right, consider it free
@@ -451,7 +459,7 @@ bool isRightFree() {
 
 bool isLeftFree() {
   turnToAngle(90);
-  float distanceToTravel = 1.65 - getCorrectY();
+  float distanceToTravel = 1.6 - getCorrectY();
   moveForward(distanceToTravel);
   turnToAngle(0);
   if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the left, consider it free

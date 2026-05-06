@@ -61,3 +61,4 @@ int checkTopography();
 void moveToEnd();
 bool isRightFree();
 bool isLeftFree();
+bool checkMiddle();

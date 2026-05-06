@@ -418,15 +418,13 @@ void moveToEnd() {
       break; // Reached the end
     }
 
-    if (!(getCorrectY() < 0.8) && isRightFree()) {
+
+    if ((getCorrectY() > 1.2 || getCorrectY() < 0.8) && checkMiddle()) {
+      correctToAngle(0);
+    } else if (!(getCorrectY() < 0.8) && isRightFree()) {
       correctToAngle(0);
     } else if (!(getCorrectY() > 0.8) && isLeftFree()) {
       correctToAngle(0);
-    } else {
-      turnToAngle(90);
-      float distToTravel = 1.1 - getCorrectY();
-      moveForward(distToTravel);
-      turnToAngle(0);
     }
   }
 
@@ -445,12 +443,32 @@ void moveToEnd() {
   moveForward(1.0);
 }
 
+bool checkMiddle() {
+  float currY = getCorrectY();
+  float distToTravel = 0.0;
+  if (currY > 1.2) {
+    turnToAngle(-90);
+    distToTravel = currY - 0.95;
+  } else if (currY < 0.8) {
+    turnToAngle(90);
+    distToTravel = 1.05 - currY;
+  }
+  moveForward(distToTravel);
+  turnToAngle(0);
+
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 23.0) {
+    return true; // middle is free
+  } else {
+    return false; // middle is blocked
+  }
+}
+
 bool isRightFree() {
   turnToAngle(-90);
   float distanceToTravel = getCorrectY() - 0.35;
   moveForward(distanceToTravel);
   turnToAngle(0);
-  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the right, consider it free
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 23.0) { // if more than 21 cm on the right, consider it free
     return true;
   } else {
     return false;
@@ -462,7 +480,7 @@ bool isLeftFree() {
   float distanceToTravel = 1.6 - getCorrectY();
   moveForward(distanceToTravel);
   turnToAngle(0);
-  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 21.0) { // if more than 21 cm on the left, consider it free
+  if (calculateDistance(dist_sensor_trigs, dist_sensor_left_echo) > 23.0) { // if more than 21 cm on the left, consider it free
     return true;
   } else {
     return false;
